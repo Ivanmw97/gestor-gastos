@@ -25,7 +25,8 @@ export const useTransactionStore = defineStore('transactions', {
             .reduce((sum, t) => sum + t.amount, 0);
     },
     balance: (state): number => {
-        return (state as any).totalIncome - (state as any).totalExpense;
-    }
+      return state.transactions
+        .reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0);
+    },
   },
 });

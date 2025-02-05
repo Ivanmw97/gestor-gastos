@@ -20,19 +20,20 @@
       </div>
     </div>
 
-    <!-- Botón para añadir nueva transacción -->
-    <div class="mt-8 text-center">
+    <!-- Sección de transacciones recientes con botón a la derecha -->
+    <div class="mt-8 flex items-center justify-between">
+      <h2 class="text-2xl font-semibold">Transacciones Recientes</h2>
       <button
         @click="modalStore.openModal()"
         class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition"
+        title="Añadir transacción"
       >
         + Añadir Transacción
       </button>
     </div>
 
     <!-- Lista de transacciones recientes -->
-    <div class="mt-8">
-      <h2 class="text-2xl font-semibold mb-4">Transacciones Recientes</h2>
+    <div class="mt-4">
       <ul v-if="recentTransactions.length > 0" class="bg-white shadow-md rounded-lg divide-y">
         <li v-for="transaction in recentTransactions" :key="transaction.id" class="p-4 flex justify-between">
           <span class="font-medium">{{ transaction.category }}</span>
@@ -42,7 +43,7 @@
         </li>
       </ul>
       <p v-else class="text-gray-500">No hay transacciones recientes.</p>
-    </div>
+    </div>    
   </div>
 </template>
 

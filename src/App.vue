@@ -1,19 +1,24 @@
 <template>
-  <Navbar />
-  <router-view />
+  <div class="flex h-screen bg-gray-100">
+    <!-- Sidebar lateral -->
+    <Sidebar />
 
-  <Dashboard @open-modal="showModal = true" />
+    <!-- Contenido principal -->
+    <div class="flex-1 flex flex-col">
+      <div class="p-6 flex-1 overflow-y-auto">
+        <router-view @open-modal="showModal = true" />
+      </div>
+    </div>
+  </div>
 
-  <!-- Usar el componente Modal -->
-  <Modal :isOpen="showModal" title="Añadir Transacción" @close="showModal = false">
-    <p>Contenido del modal aquí...</p>
-  </Modal>
+  <!-- Modal Global -->
+  <Modal :isOpen="showModal" title="Añadir Transacción" @close="showModal = false" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Navbar from './components/Navbar.vue';
 import Modal from './components/TransactionModal.vue';
+import Sidebar from './components/Sidebar.vue';
 
 const showModal = ref(false);
 </script>

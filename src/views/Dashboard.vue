@@ -1,74 +1,102 @@
 <template>
   <div class="container mx-auto p-6">
-    <!-- Financial Summary Cards -->
-    <div class="grid grid-cols-3 gap-4 mb-8">
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-sm text-gray-600">Spent Today</h3>
-        <p class="text-2xl font-bold">
-          {{ spentToday }} € 
-          <span v-if="Number(spentToday) > 0" :class="spentMoreThanYesterday ? 'text-red-500' : 'text-green-500'">
-            {{ spentMoreThanYesterday ? '↑' : '↓' }}
-          </span>
-        </p>
-        <p class="text-sm text-gray-600">Activity on {{ today }}</p>
-        <p class="text-sm text-gray-600">
-          <template v-if="Number(spentToday) > 0">
-            That's {{ compareYesterday }} € {{ spentMoreThanYesterday ? 'more' : 'less' }} than yesterday
-          </template>
-          <template v-else>
-            You have not spent anything today yet
-          </template>
-        </p>
-      </div>
-      
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-sm text-gray-600">Spent This Month</h3>
-        <p class="text-2xl font-bold">{{ spentThisMonth }} €</p>
-        <p class="text-sm text-gray-600">Activity for {{ currentMonth }}</p>
-        <p class="text-sm text-gray-600">That's {{ monthlyPercentage }}% of your total budget</p>
-      </div>
-
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h3 class="text-sm text-gray-600">Budget Remaining</h3>
-        <p class="text-2xl font-bold">{{ budgetRemaining }} €</p>
-        <p class="text-sm text-gray-600">For {{ currentMonth }}</p>
-        <p class="text-sm text-gray-600">{{ budgetStatus }}</p>
+    <!-- Empty State - Only show when no budgets -->
+    <div v-if="budgets.length === 0" class="flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow text-center mb-8">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 class="text-xl font-semibold mb-2">Welcome to Your Financial Dashboard</h3>
+      <p class="text-gray-600 mb-6">Get started by setting up your monthly budgets and tracking your expenses.</p>
+      <div class="flex gap-4">
+        <router-link to="/budgets" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+          Create Budget
+        </router-link>
       </div>
     </div>
 
-    <!-- Category Spending -->
-    <div class="space-y-4">
-      <div v-for="category in categoriesWithTransactions" :key="category.name" 
-           class="bg-white p-6 rounded-lg shadow">
-        <div class="flex justify-between items-center mb-2">
-          <div>
-            <h3 class="font-semibold">{{ category.name }}</h3>
-            <p class="text-sm text-gray-600">{{ Number(category.spent).toFixed(2) }} € / {{ category.budget }} €</p>
-          </div>
+    <!-- Regular Dashboard Content -->
+    <template v-else>
+      <!-- Financial Summary Cards -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h3 class="text-sm text-gray-600">Spent Today</h3>
+          <p class="text-2xl font-bold">
+            {{ spentToday }} € 
+            <span v-if="Number(spentToday) > 0" :class="spentMoreThanYesterday ? 'text-red-500' : 'text-green-500'">
+              {{ spentMoreThanYesterday ? '↑' : '↓' }}
+            </span>
+          </p>
+          <p class="text-sm text-gray-600">Activity on {{ today }}</p>
+          <p class="text-sm text-gray-600">
+            <template v-if="Number(spentToday) > 0">
+              That's {{ compareYesterday }} € {{ spentMoreThanYesterday ? 'more' : 'less' }} than yesterday
+            </template>
+            <template v-else>
+              You have not spent anything today yet
+            </template>
+          </p>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h3 class="text-sm text-gray-600">Spent This Month</h3>
+          <p class="text-2xl font-bold">{{ spentThisMonth }} €</p>
+          <p class="text-sm text-gray-600">Activity for {{ currentMonth }}</p>
+          <p class="text-sm text-gray-600">That's {{ monthlyPercentage }}% of your total budget</p>
+        </div>
+    
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h3 class="text-sm text-gray-600">Budget Remaining</h3>
+          <p class="text-2xl font-bold">{{ budgetRemaining }} €</p>
+          <p class="text-sm text-gray-600">For {{ currentMonth }}</p>
+          <p class="text-sm text-gray-600">{{ budgetStatus }}</p>
+        </div>
+      </div>
+    
+      <!-- Category Spending with Empty State -->
+      <div class="space-y-4">
+        <div v-if="transactions.length === 0" class="bg-white p-8 rounded-lg shadow text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <h3 class="text-lg font-semibold mb-2">No Transactions Yet</h3>
+          <p class="text-gray-600 mb-4">Start tracking your expenses to see your spending patterns here.</p>
+          <router-link to="/transactions" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+            Add Your First Transaction
+          </router-link>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-          <div class="h-2 rounded-full transition-all"
-               :class="getBudgetColor(Number(category.spent) / category.budget)"
-               :style="{ width: `${Math.min((Number(category.spent) / category.budget) * 100, 100)}%` }">
-          </div>
-        </div>
-
-        <!-- Transactions List -->
-        <div class="space-y-2">
-          <div v-for="transaction in category.transactions" :key="transaction.id"
-               class="flex justify-between items-center text-sm">
-            <div class="flex items-center gap-2">
-              <span>{{ formatDate(transaction.date) }}</span>
-              <span>—</span>
-              <span>{{ transaction.description }}</span>
+        <div v-else v-for="category in categoriesWithTransactions" :key="category.name" 
+             class="bg-white p-6 rounded-lg shadow">
+          <div class="flex justify-between items-center mb-2">
+            <div>
+              <h3 class="font-semibold">{{ category.name }}</h3>
+              <p class="text-sm text-gray-600">{{ Number(category.spent).toFixed(2) }} € / {{ category.budget }} €</p>
             </div>
-            <span class="text-red-500">-{{ Number(transaction.amount).toFixed(2) }} €</span>
+          </div>
+    
+          <!-- Progress Bar -->
+          <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+            <div class="h-2 rounded-full transition-all"
+                 :class="getBudgetColor(Number(category.spent) / category.budget)"
+                 :style="{ width: `${Math.min((Number(category.spent) / category.budget) * 100, 100)}%` }">
+            </div>
+          </div>
+    
+          <!-- Transactions List -->
+          <div class="space-y-2">
+            <div v-for="transaction in category.transactions" :key="transaction.id"
+                 class="flex justify-between items-center text-sm">
+              <div class="flex items-center gap-2">
+                <span>{{ formatDate(transaction.date) }}</span>
+                <span>—</span>
+                <span>{{ transaction.description }}</span>
+              </div>
+              <span class="text-red-500">-{{ Number(transaction.amount).toFixed(2) }} €</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -180,7 +208,6 @@ const formatDate = (date: string) => {
   });
 };
 
-// Add this computed property in the script section
 const spentMoreThanYesterday = computed(() => {
   const today = new Date();
   const yesterday = new Date(today);

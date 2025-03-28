@@ -33,7 +33,7 @@
         <div class="flex justify-between items-center mb-4">
           <h3 class="font-semibold">{{ budget.category }}</h3>
           <div class="flex items-center gap-2">
-            <span class="text-sm text-gray-600">{{ budget.spent }} € / {{ budget.limit }} €</span>
+            <span class="text-sm text-gray-600">{{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €</span>
             <button @click="editBudget(budget)" class="text-gray-500 hover:text-blue-600">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -57,7 +57,7 @@
         </div>
 
         <div class="flex justify-between text-sm text-gray-600">
-          <span>{{ ((budget.spent / budget.limit) * 100).toFixed(0) }}% used</span>
+          <span>{{ ((budget.spent / budget.limit) * 100).toFixed(1) }}% used</span>
           <span>{{ budget.limit - budget.spent }} € remaining</span>
         </div>
       </div>
@@ -81,7 +81,7 @@
         </div>
 
         <div class="flex justify-between text-sm text-gray-600">
-          <span>{{ ((totalSpent / totalBudget) * 100).toFixed(0) }}% of total budget used</span>
+          <span>{{ ((totalSpent / totalBudget) * 100).toFixed(1) }}% of total budget used</span>
           <span>{{ totalBudget - totalSpent }} € remaining</span>
         </div>
       </template>
@@ -102,7 +102,7 @@
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium mb-2">Monthly Limit (€)</label>
-              <input v-model.number="newBudget.limit" type="number" required min="1"
+              <input v-model.number="newBudget.limit" type="number" required min="0.01" step="0.01"
                      class="w-full border rounded-md p-2">
             </div>
             <div class="flex justify-end gap-4">
@@ -131,7 +131,7 @@
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium mb-2">Monthly Limit (€)</label>
-              <input v-model.number="editingBudget.limit" type="number" required min="1"
+              <input v-model.number="editingBudget.limit" type="number" required min="0.01" step="0.01"
                      class="w-full border rounded-md p-2">
             </div>
             <div class="flex justify-end gap-4">

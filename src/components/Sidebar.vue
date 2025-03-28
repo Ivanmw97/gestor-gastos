@@ -10,6 +10,7 @@
         <p class="text-gray-400 text-xs px-4">MENU</p>
         <SidebarItem to="/" icon="layout-dashboard" label="Dashboard" />
         <SidebarItem to="/transactions" icon="bank" label="Transactions" />
+        <SidebarItem to="/budgets" icon="wallet" label="Budgets" />
         <SidebarItem to="/stats" icon="bar-chart" label="Stats" />
   
         <p class="text-gray-400 text-xs px-4 mt-6">ACCOUNT</p>

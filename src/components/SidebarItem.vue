@@ -18,14 +18,12 @@
   import { defineProps, computed } from 'vue';
   import * as LucideIcons from 'lucide-vue-next';
   
-  // Definir las props que recibe el componente
   const props = defineProps<{
     to: string;
     icon: string;
     label: string;
   }>();
   
-  // Cargar el icono de forma segura
   const iconComponent = computed(() => {
     return (LucideIcons as Record<string, any>)[props.icon] || null;
   });

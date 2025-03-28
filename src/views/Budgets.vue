@@ -52,13 +52,19 @@
           <div 
             class="h-2.5 rounded-full transition-all"
             :class="getBudgetColor(budget.spent / budget.limit)"
-            :style="{ width: `${(budget.spent / budget.limit * 100)}%` }"
+            :style="{ width: `${Math.min((budget.spent / budget.limit * 100), 100)}%` }"
           ></div>
         </div>
 
+        <!-- Individual Budget Status -->
         <div class="flex justify-between text-sm text-gray-600">
           <span>{{ ((budget.spent / budget.limit) * 100).toFixed(1) }}% used</span>
-          <span>{{ budget.limit - budget.spent }} € remaining</span>
+          <span>
+            {{ budget.limit - budget.spent > 0 
+              ? `${(budget.limit - budget.spent).toFixed(2)} € available` 
+              : `${Math.abs(budget.limit - budget.spent).toFixed(2)} € over budget`
+            }}
+          </span>
         </div>
       </div>
     </div>
@@ -76,13 +82,19 @@
           <div 
             class="h-3 rounded-full transition-all"
             :class="getBudgetColor(totalSpent / totalBudget)"
-            :style="{ width: `${(totalSpent / totalBudget * 100)}%` }"
+            :style="{ width: `${Math.min((totalSpent / totalBudget * 100), 100)}%` }"
           ></div>
         </div>
 
+        <!-- Total Budget Status -->
         <div class="flex justify-between text-sm text-gray-600">
           <span>{{ ((totalSpent / totalBudget) * 100).toFixed(1) }}% of total budget used</span>
-          <span>{{ totalBudget - totalSpent }} € remaining</span>
+          <span>
+            {{ totalBudget - totalSpent > 0 
+              ? `${(totalBudget - totalSpent).toFixed(2)} € available` 
+              : `${Math.abs(totalBudget - totalSpent).toFixed(2)} € over total budget`
+            }}
+          </span>
         </div>
       </template>
     </div>

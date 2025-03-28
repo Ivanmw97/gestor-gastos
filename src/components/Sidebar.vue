@@ -14,8 +14,7 @@
         <SidebarItem to="/stats" icon="bar-chart" label="Stats" />
   
         <p class="text-gray-400 text-xs px-4 mt-6">ACCOUNT</p>
-        <SidebarItem to="/settings" icon="settings" label="Account Settings" />
-        <SidebarItem to="/logout" icon="log-out" label="Sign Out" />
+        <SidebarItem to="/settings" icon="settings" label="Settings" />
       </nav>
     </div>
   </template>

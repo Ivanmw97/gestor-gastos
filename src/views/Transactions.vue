@@ -1,15 +1,31 @@
 <template>
   <div class="p-6">
     <div class="flex justify-between items-center mb-8">
-      <h1 class="text-2xl font-bold">Transactions</h1>
+      <div>
+        <h1 class="text-2xl font-bold">
+          Transactions
+        </h1>
+        <p class="text-sm text-gray-500">Manage your income and expenses</p>
+      </div>
       <div class="flex items-center gap-4">
-        <select v-if="availableMonths.length > 0" 
-                v-model="selectedMonth" 
-                class="border rounded-md px-3 py-2">
-          <option v-for="month in availableMonths" :key="month" :value="month">
-            {{ formatMonth(month) }}
-          </option>
-        </select>
+        <div v-if="availableMonths.length > 0" class="flex gap-4">
+          <select v-model="selectedMonth" 
+                  class="border rounded-md px-3 py-2">
+            <option value="">All Months</option>
+            <option v-for="month in availableMonths" :key="month" :value="month">
+              {{ formatMonth(month) }}
+            </option>
+          </select>
+          <select v-model="selectedCategory" 
+                  class="border rounded-md px-3 py-2">
+            <option value="">All Categories</option>
+            <option v-for="budget in budgets" 
+                    :key="budget.category" 
+                    :value="budget.category">
+              {{ budget.category }}
+            </option>
+          </select>
+        </div>
         <button @click="showAddModal = true" 
                 class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
           New Transaction
@@ -111,7 +127,10 @@
           </div>
           <div class="mb-4">
             <label class="block text-sm font-medium mb-2">Date</label>
-            <input v-model="currentTransaction.date" type="date" required
+            <input v-model="currentTransaction.date" 
+                   type="date" 
+                   required
+                   :max="new Date().toISOString().split('T')[0]"
                    class="w-full border rounded-md p-2">
           </div>
           <div class="flex justify-end gap-4">
@@ -144,11 +163,13 @@ const availableMonths = computed(() => {
   return Array.from(months).sort().reverse();
 });
 
-const selectedMonth = ref(new Date().toISOString().substring(0, 7));
+const selectedMonth = ref('');
+const selectedCategory = ref('');
 
 const filteredTransactions = computed(() => {
   return transactions.value
-    .filter(t => t.date.startsWith(selectedMonth.value))
+    .filter(t => !selectedMonth.value || t.date.startsWith(selectedMonth.value))
+    .filter(t => !selectedCategory.value || t.category === selectedCategory.value)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 });
 
@@ -173,7 +194,7 @@ const currentTransaction = ref<Omit<Transaction, 'id'>>({
   description: '',
   category: '',
   amount: 0,
-  date: new Date().toISOString().split('T')[0]
+  date: new Date().toISOString().split('T')[0] // Sets default to today
 });
 
 const editTransaction = (transaction: any) => {

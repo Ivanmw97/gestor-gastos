@@ -1,102 +1,105 @@
 <template>
-  <div class="container mx-auto p-6">
-    <!-- Empty State - Only show when no budgets -->
-    <div v-if="budgets.length === 0" class="flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow text-center mb-8">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <h3 class="text-xl font-semibold mb-2">Welcome to Your Financial Dashboard</h3>
-      <p class="text-gray-600 mb-6">Get started by setting up your monthly budgets and tracking your expenses.</p>
-      <div class="flex gap-4">
-        <router-link to="/budgets" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
-          Create Budget
-        </router-link>
+  <div class="p-6">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold">Dashboard</h1>
+      <p class="text-sm text-gray-500">Overview of your financial activity</p>
+    </div>
+
+    <!-- Stats Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Today's Spending -->
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <h3 class="text-sm text-gray-500 mb-2">Spent Today</h3>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold">{{ todaySpent.toFixed(2) }} €</span>
+          <span class="text-sm" :class="spentDifference > 0 ? 'text-red-500' : 'text-green-500'">
+            {{ spentDifference > 0 ? '↑' : '↓' }} {{ Math.abs(spentDifference).toFixed(2) }} €
+          </span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Activity on {{ formatDate(new Date()) }}</p>
+        <p class="text-xs" :class="spentDifference > 0 ? 'text-red-500' : 'text-green-500'">
+          That's {{ Math.abs(spentDifference).toFixed(2) }} € {{ spentDifference > 0 ? 'more' : 'less' }} than yesterday
+        </p>
+      </div>
+
+      <!-- Monthly Spending -->
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <h3 class="text-sm text-gray-500 mb-2">Spent This Month</h3>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold">{{ monthlySpent.toFixed(2) }} €</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Activity for {{ formatMonth(new Date()) }}</p>
+        <p class="text-xs text-gray-600">That's {{ ((monthlySpent / totalBudget) * 100).toFixed(1) }}% of your total budget</p>
+      </div>
+
+      <!-- Budget Remaining -->
+      <div class="bg-white p-6 rounded-lg shadow-sm">
+        <h3 class="text-sm text-gray-500 mb-2">Budget Remaining</h3>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold">{{ (totalBudget - monthlySpent).toFixed(2) }} €</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">For {{ formatMonth(new Date()) }}</p>
+        <p class="text-xs" :class="totalBudget - monthlySpent > 0 ? 'text-green-500' : 'text-red-500'">
+          {{ totalBudget - monthlySpent > 0 ? 'You are within budget' : 'You are over budget' }}
+        </p>
       </div>
     </div>
 
-    <!-- Regular Dashboard Content -->
-    <template v-else>
-      <!-- Financial Summary Cards -->
-      <div class="grid grid-cols-3 gap-4 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow">
-          <h3 class="text-sm text-gray-600">Spent Today</h3>
-          <p class="text-2xl font-bold">
-            {{ spentToday }} € 
-            <span v-if="Number(spentToday) > 0" :class="spentMoreThanYesterday ? 'text-red-500' : 'text-green-500'">
-              {{ spentMoreThanYesterday ? '↑' : '↓' }}
-            </span>
-          </p>
-          <p class="text-sm text-gray-600">Activity on {{ today }}</p>
-          <p class="text-sm text-gray-600">
-            <template v-if="Number(spentToday) > 0">
-              That's {{ compareYesterday }} € {{ spentMoreThanYesterday ? 'more' : 'less' }} than yesterday
-            </template>
-            <template v-else>
-              You have not spent anything today yet
-            </template>
-          </p>
-        </div>
-        
-        <div class="bg-white p-6 rounded-lg shadow">
-          <h3 class="text-sm text-gray-600">Spent This Month</h3>
-          <p class="text-2xl font-bold">{{ spentThisMonth }} €</p>
-          <p class="text-sm text-gray-600">Activity for {{ currentMonth }}</p>
-          <p class="text-sm text-gray-600">That's {{ monthlyPercentage }}% of your total budget</p>
-        </div>
-    
-        <div class="bg-white p-6 rounded-lg shadow">
-          <h3 class="text-sm text-gray-600">Budget Remaining</h3>
-          <p class="text-2xl font-bold">{{ budgetRemaining }} €</p>
-          <p class="text-sm text-gray-600">For {{ currentMonth }}</p>
-          <p class="text-sm text-gray-600">{{ budgetStatus }}</p>
+    <!-- Budget Overview -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-lg font-semibold">Budget Overview</h2>
+          <p class="text-sm text-gray-500">Current month progress</p>
         </div>
       </div>
-    
-      <!-- Category Spending with Empty State -->
-      <div class="space-y-4">
-        <div v-if="transactions.length === 0" class="bg-white p-8 rounded-lg shadow text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <h3 class="text-lg font-semibold mb-2">No Transactions Yet</h3>
-          <p class="text-gray-600 mb-4">Start tracking your expenses to see your spending patterns here.</p>
-          <router-link to="/transactions" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
-            Add Your First Transaction
-          </router-link>
+      
+      <div class="space-y-6">
+        <div v-for="budget in budgetsWithSpent" :key="budget.category" class="space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="font-medium">{{ budget.category }}</span>
+            <span class="text-sm">{{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-2">
+            <div class="h-2 rounded-full transition-all duration-300"
+                 :class="getBudgetColor(budget.spent / budget.limit)"
+                 :style="{ width: `${Math.min((budget.spent / budget.limit * 100), 100)}%` }">
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <div v-else v-for="category in categoriesWithTransactions" :key="category.name" 
-             class="bg-white p-6 rounded-lg shadow">
-          <div class="flex justify-between items-center mb-2">
-            <div>
-              <h3 class="font-semibold">{{ category.name }}</h3>
-              <p class="text-sm text-gray-600">{{ Number(category.spent).toFixed(2) }} € / {{ category.budget }} €</p>
-            </div>
+    <!-- Recent Transactions -->
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-lg font-semibold">Recent Transactions</h2>
+          <p class="text-sm text-gray-500">Last 5 transactions</p>
+        </div>
+        <router-link to="/transactions" 
+                     class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+          View All
+        </router-link>
+      </div>
+
+      <div class="space-y-4">
+        <div v-for="transaction in recentTransactions" :key="transaction.id"
+             class="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+          <div>
+            <p class="font-medium">{{ transaction.description }}</p>
+            <p class="text-sm text-gray-500">{{ transaction.category }}</p>
           </div>
-    
-          <!-- Progress Bar -->
-          <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-            <div class="h-2 rounded-full transition-all"
-                 :class="getBudgetColor(Number(category.spent) / category.budget)"
-                 :style="{ width: `${Math.min((Number(category.spent) / category.budget) * 100, 100)}%` }">
-            </div>
-          </div>
-    
-          <!-- Transactions List -->
-          <div class="space-y-2">
-            <div v-for="transaction in category.transactions" :key="transaction.id"
-                 class="flex justify-between items-center text-sm">
-              <div class="flex items-center gap-2">
-                <span>{{ formatDate(transaction.date) }}</span>
-                <span>—</span>
-                <span>{{ transaction.description }}</span>
-              </div>
-              <span class="text-red-500">-{{ Number(transaction.amount).toFixed(2) }} €</span>
-            </div>
+          <div class="text-right">
+            <p :class="transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'">
+              {{ transaction.type === 'expense' ? '-' : '+' }}{{ transaction.amount.toFixed(2) }} €
+            </p>
+            <p class="text-xs text-gray-500">{{ formatDate(new Date(transaction.date)) }}</p>
           </div>
         </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -111,23 +114,14 @@ const budgetStore = useBudgetStore();
 const { transactions } = storeToRefs(transactionStore);
 const { budgets } = storeToRefs(budgetStore);
 
-const today = computed(() => {
-  return new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-});
-
-const currentMonth = computed(() => {
-  return new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-});
-
-const spentToday = computed(() => {
+const todaySpent = computed(() => {
   const today = new Date().toISOString().split('T')[0];
-  const amount = transactions.value
+  return transactions.value
     .filter(t => t.type === 'expense' && t.date.startsWith(today))
     .reduce((sum, t) => sum + t.amount, 0);
-  return Number(amount).toFixed(2);
 });
 
-const compareYesterday = computed(() => {
+const spentDifference = computed(() => {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
@@ -137,61 +131,37 @@ const compareYesterday = computed(() => {
     .filter(t => t.type === 'expense' && t.date.startsWith(yesterdayStr))
     .reduce((sum, t) => sum + t.amount, 0);
 
-  return Math.abs(yesterdaySpent - Number(spentToday.value)).toFixed(2);
+  return todaySpent.value - yesterdaySpent;
 });
 
-const spentThisMonth = computed(() => {
+const monthlySpent = computed(() => {
   const currentMonth = new Date().getMonth();
-  const amount = transactions.value
+  return transactions.value
     .filter(t => t.type === 'expense' && new Date(t.date).getMonth() === currentMonth)
     .reduce((sum, t) => sum + t.amount, 0);
-  return Number(amount).toFixed(2);
 });
 
 const totalBudget = computed(() => {
   return budgets.value.reduce((sum, budget) => sum + budget.limit, 0);
 });
 
-const categoriesWithTransactions = computed(() => {
-  const transactionCategories = new Set(
-    transactions.value.map(t => t.category)
-  );
-
-  const allCategories = new Set([
-    ...budgets.value.map(b => b.category),
-    ...transactionCategories
-  ]);
-
-  return Array.from(allCategories).map(name => {
-    const budget = budgets.value.find(b => b.category === name)?.limit || 0;
-    const categoryTransactions = transactions.value
-      .filter(t => t.category === name && t.type === 'expense')
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    const spent = categoryTransactions
-      .reduce((sum, t) => sum + Number(t.amount), 0);
+const budgetsWithSpent = computed(() => {
+  return budgets.value.map(budget => {
+    const spent = transactions.value
+      .filter(t => t.type === 'expense' && t.category === budget.category)
+      .reduce((sum, t) => sum + t.amount, 0);
 
     return {
-      name,
-      budget,
-      spent,
-      transactions: categoryTransactions
+      ...budget,
+      spent
     };
   });
 });
 
-const monthlyPercentage = computed(() => {
-  return Math.round((Number(spentThisMonth.value) / totalBudget.value) * 100);
-});
-
-const budgetRemaining = computed(() => {
-  return (totalBudget.value - Number(spentThisMonth.value)).toFixed(2);
-});
-
-const budgetStatus = computed(() => {
-  return Number(budgetRemaining.value) < 0 
-    ? "You've exceeded your budget this month"
-    : "You are within budget";
+const recentTransactions = computed(() => {
+  return [...transactions.value]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
 });
 
 const getBudgetColor = (percentage: number) => {
@@ -201,23 +171,17 @@ const getBudgetColor = (percentage: number) => {
   return 'bg-blue-500';
 };
 
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('en-US', {
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'
   });
 };
 
-const spentMoreThanYesterday = computed(() => {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-  const yesterdaySpent = transactions.value
-    .filter(t => t.type === 'expense' && t.date.startsWith(yesterdayStr))
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  return Number(spentToday.value) > yesterdaySpent;
-});
+const formatMonth = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric'
+  });
+};
 </script>

@@ -16,9 +16,17 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useTransactionStore } from './store/transactions';
+import Sidebar from './components/Sidebar.vue';
 import { ref } from 'vue';
 import Modal from './components/TransactionModal.vue';
-import Sidebar from './components/Sidebar.vue';
 
 const showModal = ref(false);
+
+const transactionStore = useTransactionStore();
+
+onMounted(() => {
+  transactionStore.loadTransactions();
+});
 </script>

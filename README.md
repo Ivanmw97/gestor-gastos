@@ -23,7 +23,7 @@ A modern web application for tracking personal finances, managing budgets, and m
 
 1. Clone the repository
 ```bash
-git clone [your-repo-url]
+git clone https://github.com/Ivanmw97/gestor-gastos.git
 cd gestor-gastos
 ```
 2. Install dependencies

@@ -46,7 +46,7 @@ jobs:
         npm config set strict-ssl false
         rm -rf node_modules package-lock.json
         npm install
-        npm install @rollup/rollup-linux-x64-gnu
+        npm install @rollup/rollup-linux-x64-gnu @vitest/coverage-v8
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Run tests with coverage

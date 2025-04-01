@@ -3,6 +3,7 @@ import typescript from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import vue from 'eslint-plugin-vue';
 import globals from 'globals';
+import vueParser from 'vue-eslint-parser';
 
 export default [
   {
@@ -24,7 +25,7 @@ export default [
       'vue': vue
     },
     languageOptions: {
-      parser: vue.parser,
+      parser: vueParser,
       parserOptions: {
         parser: {
           ts: typescriptParser,

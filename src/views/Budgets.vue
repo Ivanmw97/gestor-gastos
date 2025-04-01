@@ -10,8 +10,8 @@
       </div>
       <button 
         v-if="budgetsWithSpent.length > 0"
-        @click="showAddBudgetModal = true"
         class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+        @click="showAddBudgetModal = true"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -31,8 +31,8 @@
           <p class="text-gray-500 mb-6">Start managing your finances by creating your first budget category</p>
         </div>
         <button 
-          @click="showAddBudgetModal = true"
           class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+          @click="showAddBudgetModal = true"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -41,7 +41,7 @@
         </button>
       </div>
       
-      <div v-else v-for="budget in budgetsWithSpent" :key="budget.category" 
+      <div v-for="budget in budgetsWithSpent" v-else :key="budget.category" 
            class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
         <div class="flex justify-between items-center mb-4">
           <div>
@@ -54,14 +54,14 @@
               {{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €
             </span>
             <div class="flex gap-2">
-              <button @click="editBudget(budget)" 
-                      class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 transition-colors">
+              <button class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 transition-colors" 
+                      @click="editBudget(budget)">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
               </button>
-              <button @click="removeBudget(budget.category)" 
-                      class="text-gray-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors">
+              <button class="text-gray-500 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors" 
+                      @click="removeBudget(budget.category)">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                 </svg>
@@ -149,8 +149,8 @@
                      class="w-full border rounded-md p-2">
             </div>
             <div class="flex justify-end gap-4">
-              <button type="button" @click="showAddBudgetModal = false"
-                      class="text-gray-600">Cancel</button>
+              <button type="button" class="text-gray-600"
+                      @click="showAddBudgetModal = false">Cancel</button>
               <button type="submit" 
                       class="bg-blue-600 text-white px-4 py-2 rounded-md">Save</button>
             </div>
@@ -178,8 +178,8 @@
                      class="w-full border rounded-md p-2">
             </div>
             <div class="flex justify-end gap-4">
-              <button type="button" @click="showEditModal = false"
-                      class="text-gray-600">Cancel</button>
+              <button type="button" class="text-gray-600"
+                      @click="showEditModal = false">Cancel</button>
               <button type="submit" 
                       class="bg-blue-600 text-white px-4 py-2 rounded-md">Update</button>
             </div>

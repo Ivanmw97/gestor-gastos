@@ -47,7 +47,7 @@
 
         <!-- Botones -->
         <div class="flex justify-between mt-4">
-          <button type="button" @click="modalStore.closeModal()" class="text-gray-500">
+          <button type="button" class="text-gray-500" @click="modalStore.closeModal()">
             Cancelar
           </button>
           <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md">

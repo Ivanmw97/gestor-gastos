@@ -25,11 +25,11 @@
               {{ budget.category }}
             </option>
           </select>
+          <button @click="showAddModal = true" 
+                  class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+            New Transaction
+          </button>
         </div>
-        <button @click="showAddModal = true" 
-                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-          New Transaction
-        </button>
       </div>
     </div>
 
@@ -83,7 +83,19 @@
 
     <!-- Empty State -->
     <div v-if="filteredTransactions.length === 0" class="text-center py-12">
-      <p class="text-gray-500">No transactions found.</p>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No transactions found</h3>
+      <p class="text-gray-500 mb-6">
+        {{ selectedMonth || selectedCategory 
+           ? 'Try adjusting your filters or create a new transaction' 
+           : 'Start tracking your finances by adding your first transaction' }}
+      </p>
+      <button @click="showAddModal = true" 
+              class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Add New Transaction
+      </button>
     </div>
   </div>
 
@@ -176,7 +188,8 @@ const filteredTransactions = computed(() => {
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('en-US', {
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
+    year: 'numeric'
   });
 };
 

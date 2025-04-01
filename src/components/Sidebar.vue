@@ -32,7 +32,7 @@
         </svg>
         <div class="flex-1">
           <p class="text-sm font-medium">Financial Manager</p>
-          <p class="text-xs text-gray-400">v1.0.0</p>
+          <p class="text-xs text-gray-400">v1.0.1</p>
         </div>
       </div>
     </div>

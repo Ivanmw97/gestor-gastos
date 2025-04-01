@@ -41,7 +41,12 @@
           <span class="text-2xl font-bold">{{ monthlySpent.toFixed(2) }} €</span>
         </div>
         <p class="text-xs text-gray-500 mt-2">Activity for {{ formatMonth(new Date()) }}</p>
-        <p class="text-xs text-gray-600">That's {{ ((monthlySpent / totalBudget) * 100).toFixed(1) }}% of your total budget</p>
+        <p v-if="totalBudget > 0" class="text-xs text-gray-600">
+          That's {{ ((monthlySpent / totalBudget) * 100).toFixed(1) }}% of your total budget
+        </p>
+        <p v-else class="text-xs text-gray-500">
+          Set up a budget to track your spending
+        </p>
       </div>
 
       <!-- Budget Remaining -->
@@ -54,8 +59,11 @@
           <span class="text-2xl font-bold">{{ (totalBudget - monthlySpent).toFixed(2) }} €</span>
         </div>
         <p class="text-xs text-gray-500 mt-2">For {{ formatMonth(new Date()) }}</p>
-        <p class="text-xs" :class="totalBudget - monthlySpent > 0 ? 'text-green-500' : 'text-red-500'">
+        <p v-if="totalBudget > 0" class="text-xs" :class="totalBudget - monthlySpent > 0 ? 'text-green-500' : 'text-red-500'">
           {{ totalBudget - monthlySpent > 0 ? 'You are within budget' : 'You are over budget' }}
+        </p>
+        <p v-else class="text-xs text-gray-500">
+          No budget limits set
         </p>
       </div>
     </div>
@@ -69,7 +77,7 @@
         </div>
       </div>
       
-      <div class="space-y-6">
+      <div v-if="budgetsWithSpent.length > 0" class="space-y-6">
         <div v-for="budget in budgetsWithSpent" :key="budget.category" class="space-y-2">
           <div class="flex justify-between items-center">
             <span class="font-medium">{{ budget.category }}</span>
@@ -83,10 +91,21 @@
           </div>
         </div>
       </div>
+      <div v-else class="text-center py-12">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <p class="text-gray-600 font-medium mb-2">No budgets set up yet</p>
+        <p class="text-gray-500 text-sm mb-4">Create budgets to track spending by category</p>
+        <router-link to="/budgets" 
+                     class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          Set Up Budget
+        </router-link>
+      </div>
     </div>
 
     <!-- Recent Transactions -->
-    <div class="bg-white rounded-lg shadow-sm p-6">
+    <div v-if="recentTransactions.length > 0" class="bg-white rounded-lg shadow-sm p-6">
       <div class="flex justify-between items-center mb-6">
         <div>
           <h2 class="text-lg font-semibold">Recent Transactions</h2>

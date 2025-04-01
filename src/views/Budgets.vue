@@ -4,7 +4,9 @@
     <div class="flex justify-between items-center mb-8">
       <div>
         <h1 class="text-2xl font-bold">Budgets</h1>
-        <p class="text-sm text-gray-500">Manage your monthly spending limits</p>
+        <p class="text-sm text-gray-500">
+          Monthly spending limits for {{ formattedMonth }}
+        </p>
       </div>
       <button 
         v-if="budgetsWithSpent.length > 0"
@@ -96,7 +98,9 @@
       <div class="flex justify-between items-center mb-4">
         <div>
           <h2 class="text-xl font-semibold">Total Budget Overview</h2>
-          <p class="text-sm text-gray-500">All categories combined</p>
+          <p class="text-sm text-gray-500">
+            Monthly spending for {{ formattedMonth }}
+          </p>
         </div>
         <span class="text-lg font-medium px-4 py-2 bg-gray-50 rounded-lg">
           {{ totalSpent.toFixed(2) }} € / {{ totalBudget.toFixed(2) }} €
@@ -192,11 +196,22 @@ import { useTransactionStore } from '../store/transactions';
 import { useBudgetStore } from '../store/budgets';
 import { storeToRefs } from 'pinia';
 import type { Budget, BudgetWithSpent } from '../types/Budget';
+// Add onMounted to check monthly reset
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  budgetStore.checkMonthlyReset();  
+});
 
 const transactionStore = useTransactionStore();
 const budgetStore = useBudgetStore();
-const { budgets } = storeToRefs(budgetStore);
+const { budgets, currentMonth } = storeToRefs(budgetStore);
+const { transactions } = storeToRefs(transactionStore);
 const showAddBudgetModal = ref(false);
+
+const formattedMonth = computed(() => 
+    new Date(currentMonth.value + '-01').toLocaleString('en-US', { month: 'long' })
+  );
 
 const newBudget = ref<Budget>({
   category: '',
@@ -204,9 +219,16 @@ const newBudget = ref<Budget>({
 });
 
 const budgetsWithSpent = computed<BudgetWithSpent[]>(() => {
+  if (!budgets.value || !transactions.value) return [];
+  
   return budgets.value.map(budget => {
-    const spent = transactionStore.transactions
-      .filter(t => t.type === 'expense' && t.category === budget.category)
+    const spent = transactions.value
+      .filter(t => 
+        t.type === 'expense' && 
+        t.category === budget.category &&
+        t.date.startsWith(currentMonth.value) &&
+        t.date <= new Date().toISOString().split('T')[0]
+      )
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {

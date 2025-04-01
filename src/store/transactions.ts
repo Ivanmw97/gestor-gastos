@@ -18,6 +18,22 @@ export const useTransactionStore = defineStore('transactions', {
     transactions: getStoredTransactions()
   }),
   
+  getters: {
+    getTransactionsByMonth: (state) => (month: string) => {
+      return state.transactions.filter(t => t.date.startsWith(month));
+    },
+
+    availableMonths: (state) => {
+      const months = new Set(state.transactions.map(t => t.date.substring(0, 7)));
+      return Array.from(months).sort().reverse();
+    },
+
+    currentMonthTransactions: (state) => {
+      const currentMonth = new Date().toISOString().substring(0, 7);
+      return state.transactions.filter(t => t.date.startsWith(currentMonth));
+    }
+  },
+  
   actions: {
     addTransaction(transaction: Transaction) {
       this.transactions.push(transaction);

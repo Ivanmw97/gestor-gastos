@@ -8,6 +8,17 @@ export interface Budget {
 
 export const useBudgetStore = defineStore('budgets', () => {
   const budgets = ref<Budget[]>([]);
+  const currentMonth = ref(new Date().toISOString().substring(0, 7));
+  const lastResetMonth = ref(localStorage.getItem('lastResetMonth') || '');
+
+  const checkMonthlyReset = () => {
+    const thisMonth = new Date().toISOString().substring(0, 7);
+    if (lastResetMonth.value !== thisMonth) {
+      currentMonth.value = thisMonth;
+      lastResetMonth.value = thisMonth;
+      localStorage.setItem('lastResetMonth', thisMonth);
+    }
+  };
 
   const addBudget = (budget: Budget) => {
     budgets.value.push(budget);
@@ -29,6 +40,9 @@ export const useBudgetStore = defineStore('budgets', () => {
 
   return {
     budgets,
+    currentMonth,
+    lastResetMonth,
+    checkMonthlyReset,
     addBudget,
     updateBudget,
     removeBudget

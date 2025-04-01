@@ -34,19 +34,3 @@ npm install
 ```bash
 npm run dev
 ```
-
-## Project Structure
-
-```plaintext
-├── src/
-│   ├── components/     # Reusable Vue components
-│   ├── views/          # Page components
-│   ├── store/          # Pinia stores
-│   ├── types/          # TypeScript type definitions
-│   └── assets/         # Static assets
-├── public/            # Static public assets
-├── index.html         # Entry HTML file
-├── vite.config.ts     # Vite configuration
-├── tailwind.config.js # Tailwind CSS configuration
-└── package.json       # Project dependencies and scripts
-```

@@ -44,7 +44,9 @@ jobs:
       run: |
         npm config set registry https://registry.npmjs.org/
         npm config set strict-ssl false
-        npm ci --no-optional
+        rm -rf node_modules package-lock.json
+        npm install
+        npm install @rollup/rollup-linux-x64-gnu
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Run tests with coverage

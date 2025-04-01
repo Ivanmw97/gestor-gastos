@@ -7,6 +7,15 @@
       <h2 class="text-xl font-semibold mb-4">Añadir Nueva Transacción</h2>
 
       <form @submit.prevent="handleSubmit">
+        <!-- Description -->
+        <label class="block mb-2">Description:</label>
+        <input
+          v-model="newTransaction.description"
+          type="text"
+          required
+          class="border p-2 w-full rounded-md mb-4"
+        />
+
         <!-- Categoría -->
         <label class="block mb-2">Categoría:</label>
         <input
@@ -66,7 +75,8 @@ const newTransaction = ref<Transaction>({
   category: '',
   amount: 0,
   type: 'income',
-  date: new Date().toISOString(),
+  description: '',
+  date: new Date().toISOString()
 });
 
 // Función para añadir transacción
@@ -78,8 +88,15 @@ const handleSubmit = () => {
 
   transactionStore.addTransaction(newTransaction.value);
 
-  // Limpiar formulario y cerrar modal
-  newTransaction.value = { id: '', category: '', amount: 0, type: 'income', date: new Date().toISOString() };
+  // Reset form and close modal
+  newTransaction.value = {
+    id: '',
+    category: '',
+    amount: 0,
+    type: 'income',
+    description: '',
+    date: new Date().toISOString()
+  };
   modalStore.closeModal();
 };
 </script>

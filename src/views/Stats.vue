@@ -82,16 +82,18 @@ import { storeToRefs } from 'pinia';
 
 const transactionStore = useTransactionStore();
 const { transactions } = storeToRefs(transactionStore);
+const availableYears = computed(() => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = 0; i < 8; i++) {
+    years.push((currentYear - i).toString());
+  }
+  return years;
+});
+
+// Initialize selectedYear with current year
 const selectedYear = ref(new Date().getFullYear().toString());
 const selectedMonth = ref('all');
-
-
-const availableYears = computed(() => {
-  const years = new Set(
-    transactions.value.map(t => t.date.substring(0, 4))
-  );
-  return Array.from(years).sort().reverse();
-});
 
 const filteredTransactions = computed(() => {
   return transactions.value.filter(t => {

@@ -21,7 +21,7 @@ jobs:
     - name: Type check
       run: npx vue-tsc --noEmit
     - name: Lint
-      run: npx eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore
+      run: npx eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts
 
   test:
     needs: validate

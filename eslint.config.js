@@ -36,9 +36,7 @@ export default [
         sourceType: 'module'
       }
     },
-    rules: {
-      ...vue.configs['vue3-recommended'].rules
-    }
+    rules: vue.configs.recommended?.rules || {}
   },
   {
     files: ['**/*.{ts,tsx}'],
@@ -52,8 +50,6 @@ export default [
         sourceType: 'module'
       }
     },
-    rules: {
-      ...typescript.configs.recommended.rules
-    }
+    rules: typescript.configs.recommended?.rules || {}
   }
 ];

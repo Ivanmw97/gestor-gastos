@@ -19,6 +19,28 @@ export default [
     }
   },
   {
+    files: ['**/*.vue'],
+    plugins: {
+      'vue': vue
+    },
+    languageOptions: {
+      parser: vue.parser,
+      parserOptions: {
+        parser: {
+          ts: typescriptParser,
+          js: 'espree',
+          '<template>': 'espree'
+        },
+        extraFileExtensions: ['.vue'],
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      }
+    },
+    rules: {
+      ...vue.configs['vue3-recommended'].rules
+    }
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     plugins: {
       '@typescript-eslint': typescript
@@ -32,23 +54,6 @@ export default [
     },
     rules: {
       ...typescript.configs.recommended.rules
-    }
-  },
-  {
-    files: ['**/*.vue'],
-    plugins: {
-      'vue': vue
-    },
-    languageOptions: {
-      parser: vue.parser,
-      parserOptions: {
-        parser: typescriptParser,
-        ecmaVersion: 'latest',
-        sourceType: 'module'
-      }
-    },
-    rules: {
-      ...vue.configs.recommended.rules
     }
   }
 ];

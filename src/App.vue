@@ -20,7 +20,6 @@ import { onMounted } from 'vue';
 import { useTransactionStore } from './store/transactions';
 import Sidebar from './components/Sidebar.vue';
 import { ref } from 'vue';
-import Modal from './components/TransactionModal.vue';
 
 const showModal = ref(false);
 

@@ -14,14 +14,11 @@ describe('SidebarItem', () => {
     const wrapper = mount(SidebarItem, {
       props: {
         to: '/test',
-        icon: 'LayoutDashboard',
+        icon: LayoutDashboard,
         label: 'Test Item'
       },
       global: {
-        plugins: [router],
-        components: {
-          LayoutDashboard
-        }
+        plugins: [router]
       }
     })
 
@@ -33,14 +30,11 @@ describe('SidebarItem', () => {
     const wrapper = mount(SidebarItem, {
       props: {
         to: '/test',
-        icon: 'LayoutDashboard',
+        icon: LayoutDashboard,
         label: 'Test Item'
       },
       global: {
-        plugins: [router],
-        components: {
-          LayoutDashboard
-        }
+        plugins: [router]
       }
     })
 

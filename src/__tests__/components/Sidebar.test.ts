@@ -41,8 +41,8 @@ describe('Sidebar', () => {
         }
       }
     })
-    const versionText = wrapper.find('.text-xs.text-gray-400:last-child')
-    expect(versionText.text()).toBe('v1.0.1')
+    const versionText = wrapper.find('.version')
+    expect(versionText.text()).toBe('v1.1.0')
   })
 
   it('contains all navigation items', () => {

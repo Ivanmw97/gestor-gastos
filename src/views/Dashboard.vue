@@ -1,19 +1,19 @@
 <template>
-  <div class="p-6">
+  <div class="p-4 lg:p-6">
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold">Dashboard</h1>
-      <p class="text-sm text-gray-500">Real-time overview of your financial activity</p>
+    <div class="mb-6 lg:mb-8">
+      <h1 class="text-xl lg:text-2xl font-bold">Dashboard</h1>
+      <p class="text-xs lg:text-sm text-gray-500">Real-time overview of your financial activity</p>
       <p class="text-xs text-blue-600 mt-2">All budget and spending data resets at the beginning of each month</p>
     </div>
 
     <!-- Stats Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
       <!-- Today's Spending -->
-      <div class="bg-white p-6 rounded-lg shadow-sm">
-        <div class="flex justify-between items-start mb-2">
+      <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
           <h3 class="text-sm text-gray-500">Spent Today</h3>
-          <span class="text-xs text-gray-400">Updates in real-time</span>
+          <span class="text-xs text-gray-400 mt-1 sm:mt-0">Updates in real-time</span>
         </div>
         <div class="flex items-baseline gap-2">
           <span class="text-2xl font-bold">{{ todaySpent.toFixed(2) }} €</span>
@@ -69,19 +69,21 @@
     </div>
 
     <!-- Budget Overview -->
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h2 class="text-lg font-semibold">Budget Overview</h2>
-          <p class="text-sm text-gray-500">Monthly progress by category</p>
+    <div class="bg-white rounded-lg shadow-sm p-4 lg:p-6 mb-6 lg:mb-8">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+        <div class="mb-2 sm:mb-0">
+          <h2 class="text-base lg:text-lg font-semibold">Budget Overview</h2>
+          <p class="text-xs lg:text-sm text-gray-500">Monthly progress by category</p>
         </div>
       </div>
       
-      <div v-if="budgetsWithSpent.length > 0" class="space-y-6">
-        <div v-for="budget in budgetsWithSpent" :key="budget.category" class="space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-medium">{{ budget.category }}</span>
-            <span class="text-sm">{{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €</span>
+      <div v-if="budgetsWithSpent.length > 0" class="space-y-4 lg:space-y-6">
+        <div v-for="budget in budgetsWithSpent" 
+             :key="budget.category" 
+             class="space-y-2">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+            <span class="font-medium text-sm lg:text-base">{{ budget.category }}</span>
+            <span class="text-xs lg:text-sm">{{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €</span>
           </div>
           <div class="w-full bg-gray-100 rounded-full h-2">
             <div class="h-2 rounded-full transition-all duration-300"
@@ -105,11 +107,11 @@
     </div>
 
     <!-- Recent Transactions -->
-    <div v-if="recentTransactions.length > 0" class="bg-white rounded-lg shadow-sm p-6">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h2 class="text-lg font-semibold">Recent Transactions</h2>
-          <p class="text-sm text-gray-500">Your latest 5 transactions</p>
+    <div v-if="recentTransactions.length > 0" class="bg-white rounded-lg shadow-sm p-4 lg:p-6">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+        <div class="mb-2 sm:mb-0">
+          <h2 class="text-base lg:text-lg font-semibold">Recent Transactions</h2>
+          <p class="text-xs lg:text-sm text-gray-500">Your latest 5 transactions</p>
         </div>
         <router-link to="/transactions" 
                      class="text-blue-600 hover:text-blue-700 text-sm font-medium">
@@ -117,15 +119,17 @@
         </router-link>
       </div>
 
-      <div class="space-y-4">
-        <div v-for="transaction in recentTransactions" :key="transaction.id"
-             class="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
-          <div>
-            <p class="font-medium">{{ transaction.description }}</p>
-            <p class="text-sm text-gray-500">{{ transaction.category }}</p>
+      <div class="space-y-3 lg:space-y-4">
+        <div v-for="transaction in recentTransactions" 
+             :key="transaction.id"
+             class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+          <div class="mb-2 sm:mb-0">
+            <p class="font-medium text-sm lg:text-base">{{ transaction.description }}</p>
+            <p class="text-xs lg:text-sm text-gray-500">{{ transaction.category }}</p>
           </div>
-          <div class="text-right">
-            <p :class="transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'">
+          <div class="text-left sm:text-right">
+            <p :class="transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'"
+               class="text-sm lg:text-base">
               {{ transaction.type === 'expense' ? '-' : '+' }}{{ transaction.amount.toFixed(2) }} €
             </p>
             <p class="text-xs text-gray-500">{{ formatDate(new Date(transaction.date)) }}</p>

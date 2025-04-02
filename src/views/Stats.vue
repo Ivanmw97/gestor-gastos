@@ -1,20 +1,22 @@
 <template>
-  <div class="p-6">
+  <div class="p-4 lg:p-6">
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold">Statistics</h1>
+    <div class="mb-6 lg:mb-8">
+      <h1 class="text-xl lg:text-2xl font-bold">Statistics</h1>
       <p class="text-sm text-gray-500">Financial insights and analysis</p>
     </div>
 
     <!-- Time Period Selector -->
-    <div class="mb-6">
-      <select v-model="selectedYear" class="border rounded-md px-3 py-2">
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+      <select v-model="selectedYear" 
+              class="border rounded-md px-3 py-2 w-full sm:w-auto">
         <option v-for="year in availableYears" :key="year" :value="year">
           {{ year }}
         </option>
       </select>
 
-      <select v-model="selectedMonth" class="border rounded-md px-3 py-2">
+      <select v-model="selectedMonth" 
+              class="border rounded-md px-3 py-2 w-full sm:w-auto">
         <option value="all">All Months</option>
         <option v-for="month in 12" :key="month" :value="month.toString().padStart(2, '0')">
           {{ new Date(2000, month - 1).toLocaleString('en-US', { month: 'long' }) }}
@@ -23,40 +25,42 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white p-6 rounded-lg shadow-sm">
-        <h3 class="text-sm text-gray-500 mb-2">Total Income</h3>
-        <p class="text-2xl font-bold text-green-600">{{ totalIncome.toFixed(2) }} €</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
+      <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
+        <h3 class="text-xs lg:text-sm text-gray-500 mb-2">Total Income</h3>
+        <p class="text-xl lg:text-2xl font-bold text-green-600">{{ totalIncome.toFixed(2) }} €</p>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-sm">
-        <h3 class="text-sm text-gray-500 mb-2">Total Expenses</h3>
-        <p class="text-2xl font-bold text-red-600">{{ totalExpenses.toFixed(2) }} €</p>
+      <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
+        <h3 class="text-xs lg:text-sm text-gray-500 mb-2">Total Expenses</h3>
+        <p class="text-xl lg:text-2xl font-bold text-red-600">{{ totalExpenses.toFixed(2) }} €</p>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-sm">
-        <h3 class="text-sm text-gray-500 mb-2">Net Savings</h3>
-        <p class="text-2xl font-bold" :class="netSavings >= 0 ? 'text-green-600' : 'text-red-600'">
+      <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
+        <h3 class="text-xs lg:text-sm text-gray-500 mb-2">Net Savings</h3>
+        <p class="text-xl lg:text-2xl font-bold" :class="netSavings >= 0 ? 'text-green-600' : 'text-red-600'">
           {{ netSavings.toFixed(2) }} €
         </p>
       </div>
-      <div class="bg-white p-6 rounded-lg shadow-sm">
-        <h3 class="text-sm text-gray-500 mb-2">Most Spent Category</h3>
-        <p class="text-2xl font-bold text-blue-600">{{ mostSpentCategory }}</p>
+      <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
+        <h3 class="text-xs lg:text-sm text-gray-500 mb-2">Most Spent Category</h3>
+        <p class="text-xl lg:text-2xl font-bold text-blue-600">{{ mostSpentCategory }}</p>
       </div>
     </div>
 
     <!-- Category Distribution -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <div class="bg-white p-6 rounded-lg shadow-sm">
-        <h3 class="text-lg font-semibold mb-4">Expense by Category</h3>
-        <div class="space-y-4">
-          <div v-for="category in categoryExpenses" :key="category.name" class="flex items-center gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+      <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
+        <h3 class="text-base lg:text-lg font-semibold mb-4">Expense by Category</h3>
+        <div class="space-y-3 lg:space-y-4">
+          <div v-for="category in categoryExpenses" 
+               :key="category.name" 
+               class="flex items-center gap-3 lg:gap-4">
             <div class="flex-1">
               <div class="flex justify-between mb-1">
-                <span class="text-sm font-medium">{{ category.name }}</span>
-                <span class="text-sm text-gray-500">{{ category.percentage.toFixed(1) }}%</span>
+                <span class="text-xs lg:text-sm font-medium">{{ category.name }}</span>
+                <span class="text-xs lg:text-sm text-gray-500">{{ category.percentage.toFixed(1) }}%</span>
               </div>
               <div class="w-full bg-gray-100 rounded-full h-2">
-                <div class="h-2 rounded-full bg-blue-500"
+                <div class="h-2 rounded-full bg-blue-500 transition-all duration-300"
                      :style="{ width: `${category.percentage}%` }"></div>
               </div>
             </div>
@@ -64,11 +68,11 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm">
-        <h3 class="text-lg font-semibold mb-4">Daily Spending Trend</h3>
-        <div class="h-64">
+      <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
+        <h3 class="text-base lg:text-lg font-semibold mb-4">Daily Spending Trend</h3>
+        <div class="h-48 lg:h-64">
           <!-- Add a chart library of your choice here -->
-          <p class="text-gray-500 text-center mt-20">Chart coming soon...</p>
+          <p class="text-sm text-gray-500 text-center mt-16 lg:mt-20">Chart coming soon...</p>
         </div>
       </div>
     </div>

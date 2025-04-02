@@ -1,16 +1,14 @@
 <template>
-  <div class="p-6">
+  <div class="p-4 lg:p-6">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 lg:mb-8 gap-4">
       <div>
-        <h1 class="text-2xl font-bold">Budgets</h1>
-        <p class="text-sm text-gray-500">
-          Monthly spending limits for {{ formattedMonth }}
-        </p>
+        <h1 class="text-xl lg:text-2xl font-bold">Budgets</h1>
+        <p class="text-sm text-gray-500">Monthly spending limits for {{ formattedMonth }}</p>
       </div>
       <button 
         v-if="budgetsWithSpent.length > 0"
-        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
         @click="showAddBudgetModal = true"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -21,8 +19,10 @@
     </div>
 
     <!-- Budget Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-if="budgetsWithSpent.length === 0" class="col-span-full flex flex-col items-center justify-center py-20">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+      <!-- Empty State -->
+      <div v-if="budgetsWithSpent.length === 0" 
+           class="col-span-full flex flex-col items-center justify-center py-12 lg:py-20">
         <div class="text-center mb-8">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500 mb-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -41,19 +41,22 @@
         </button>
       </div>
       
-      <div v-for="budget in budgetsWithSpent" v-else :key="budget.category" 
-           class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
-        <div class="flex justify-between items-center mb-4">
+      <!-- Budget Cards -->
+      <div v-for="budget in budgetsWithSpent" 
+           v-else 
+           :key="budget.category" 
+           class="bg-white p-4 lg:p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-4">
           <div>
-            <h3 class="font-semibold text-lg">{{ budget.category }}</h3>
-            <p class="text-sm text-gray-500">Monthly Budget</p>
+            <h3 class="font-semibold text-base lg:text-lg">{{ budget.category }}</h3>
+            <p class="text-xs lg:text-sm text-gray-500">Monthly Budget</p>
           </div>
-          <div class="flex items-center gap-3">
-            <span class="text-sm font-medium" 
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <span class="text-sm font-medium order-2 sm:order-1" 
                   :class="budget.spent > budget.limit ? 'text-red-600' : 'text-gray-600'">
               {{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €
             </span>
-            <div class="flex gap-2">
+            <div class="flex gap-2 order-1 sm:order-2">
               <button class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 transition-colors" 
                       @click="editBudget(budget)">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -94,15 +97,13 @@
     </div>
 
     <!-- Total Budget Summary -->
-    <div v-if="budgetsWithSpent.length > 0" class="mt-8 bg-white rounded-lg shadow-sm p-6">
-      <div class="flex justify-between items-center mb-4">
+    <div v-if="budgetsWithSpent.length > 0" class="mt-6 lg:mt-8 bg-white rounded-lg shadow-sm p-4 lg:p-6">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
         <div>
-          <h2 class="text-xl font-semibold">Total Budget Overview</h2>
-          <p class="text-sm text-gray-500">
-            Monthly spending for {{ formattedMonth }}
-          </p>
+          <h2 class="text-lg lg:text-xl font-semibold">Total Budget Overview</h2>
+          <p class="text-xs lg:text-sm text-gray-500">Monthly spending for {{ formattedMonth }}</p>
         </div>
-        <span class="text-lg font-medium px-4 py-2 bg-gray-50 rounded-lg">
+        <span class="text-base lg:text-lg font-medium px-4 py-2 bg-gray-50 rounded-lg w-full sm:w-auto text-center">
           {{ totalSpent.toFixed(2) }} € / {{ totalBudget.toFixed(2) }} €
         </span>
       </div>
@@ -130,12 +131,12 @@
       </template>
     </div>
 
-    <!-- Add Budget Modal -->
+    <!-- Modals -->
+    <!-- Update modal padding for mobile -->
     <div v-if="showAddBudgetModal" class="fixed inset-0 z-50">
       <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-      <div class="absolute inset-0 flex items-center justify-center" 
-           :style="{ paddingTop: 'calc(64px + 5vh)', paddingBottom: '30vh', paddingLeft: '240px', paddingRight: '24px' }">
-        <div class="bg-white p-6 rounded-lg w-96">
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="bg-white p-4 lg:p-6 rounded-lg w-full max-w-sm mx-auto">
           <h2 class="text-xl font-semibold mb-4">Add New Budget</h2>
           <form @submit.prevent="addBudget">
             <div class="mb-4">
@@ -162,9 +163,8 @@
     <!-- Edit Budget Modal -->
     <div v-if="showEditModal" class="fixed inset-0 z-50">
       <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-      <div class="absolute inset-0 flex items-center justify-center"
-           :style="{ paddingTop: 'calc(64px + 5vh)', paddingBottom: '30vh', paddingLeft: '240px', paddingRight: '24px' }">
-        <div class="bg-white p-6 rounded-lg w-96">
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="bg-white p-4 lg:p-6 rounded-lg w-full max-w-sm mx-auto">
           <h2 class="text-xl font-semibold mb-4">Edit Budget</h2>
           <form @submit.prevent="updateBudget">
             <div class="mb-4">

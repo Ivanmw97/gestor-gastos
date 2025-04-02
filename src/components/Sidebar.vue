@@ -1,5 +1,18 @@
 <template>
-  <div class="h-screen w-64 bg-gray-900 text-white flex flex-col shadow-xl">
+  <!-- Mobile Menu Button -->
+  <button 
+    class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-gray-800 text-white"
+    @click="toggleSidebar"
+  >
+    <Menu v-if="!isOpen" class="h-6 w-6" />
+    <X v-else class="h-6 w-6" />
+  </button>
+
+  <!-- Sidebar -->
+  <div :class="[
+    'fixed lg:relative h-screen w-64 bg-gray-900 text-white flex flex-col shadow-xl transition-transform duration-300 z-40',
+    isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+  ]">
     <!-- Logo -->
     <div class="p-6 border-b border-gray-800">
       <div class="flex items-center gap-2">
@@ -16,11 +29,13 @@
 
     <!-- Menu -->
     <nav class="flex-1 py-6 px-4 space-y-2">
-      <p class="text-gray-400 text-xs font-medium px-2 mb-4">MENU</p>
-      <SidebarItem to="/" icon="layout-dashboard" label="Dashboard" />
-      <SidebarItem to="/transactions" icon="bank" label="Transactions" />
-      <SidebarItem to="/budgets" icon="wallet" label="Budgets" />
-      <SidebarItem to="/stats" icon="bar-chart" label="Stats" />
+      <div class="flex items-center gap-2 px-2 mb-4">
+        <p class="text-gray-400 text-xs font-medium">MENU</p>
+      </div>
+      <SidebarItem :icon="LayoutDashboard" label="Dashboard" to="/" />
+      <SidebarItem :icon="ReceiptEuro" label="Transactions" to="/transactions" />
+      <SidebarItem :icon="Wallet" label="Budgets" to="/budgets" />
+      <SidebarItem :icon="BarChart" label="Stats" to="/stats" />
     </nav>
 
     <!-- Footer -->
@@ -32,14 +47,27 @@
         </svg>
         <div class="flex-1">
           <p class="text-sm font-medium">Financial Manager</p>
-          <p class="text-xs text-gray-400">v1.0.1</p>
+          <p class="text-xs text-gray-400 version">v1.1.0</p>
         </div>
       </div>
     </div>
   </div>
 </template>
-  
+
 <script setup lang="ts">
-  import SidebarItem from '../components/SidebarItem.vue';
+import { ref, provide } from 'vue';
+import SidebarItem from '../components/SidebarItem.vue';
+import { Menu, X, LayoutDashboard, Wallet, BarChart, ReceiptEuro } from 'lucide-vue-next';
+
+const isOpen = ref(false);
+
+const toggleSidebar = () => {
+  isOpen.value = !isOpen.value;
+};
+
+// Provide the close function to child components
+provide('closeSidebar', () => {
+  isOpen.value = false;
+});
 </script>
   

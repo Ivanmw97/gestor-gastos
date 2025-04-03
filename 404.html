@@ -4,17 +4,21 @@
   <meta charset="utf-8">
   <title>Financial Manager</title>
   <script>
+    // Single Page Apps for GitHub Pages
+    // MIT License
+    // https://github.com/rafgraph/spa-github-pages
     (function() {
-      var segmentCount = 1;
+      var pathSegmentsToKeep = 1; // Keep the "gestor-gastos" segment
       var l = window.location;
-      var repo = '/gestor-gastos/';
       
+      // Get the path without the base path
+      var path = l.pathname.split('/').slice(pathSegmentsToKeep + 1).join('/');
+      
+      // Redirect to the index.html with the path as a hash
       l.replace(
         l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        repo +
-        l.pathname.split('/').slice(segmentCount + 1).join('/') +
-        (l.search ? l.search : '') +
-        (l.hash ? l.hash : '')
+        '/gestor-gastos/' + 
+        (path ? '?' + path : '')
       );
     })();
   </script>

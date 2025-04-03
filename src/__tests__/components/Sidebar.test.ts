@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import Sidebar from '../../components/Sidebar.vue'
 import SidebarItem from '../../components/SidebarItem.vue'
@@ -6,6 +6,16 @@ import { createRouter, createWebHistory } from 'vue-router'
 import * as LucideIcons from 'lucide-vue-next'
 import { createPinia, setActivePinia } from 'pinia'
 import { createTestingPinia } from '@pinia/testing'
+
+// Mock the supabase client
+vi.mock('../../lib/supabaseClient', () => ({
+  supabase: {
+    auth: {
+      getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      signOut: vi.fn().mockResolvedValue({ error: null })
+    }
+  }
+}))
 
 describe('Sidebar', () => {
   beforeEach(() => {

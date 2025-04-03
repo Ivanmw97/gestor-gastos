@@ -101,6 +101,46 @@
 
         <!-- Sign Up Form -->
         <form v-if="mode === 'signup'" class="space-y-5" @submit.prevent="handleSignUp">
+          <!-- First Name and Last Name fields -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="first-name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <input 
+                    id="first-name"   
+                    v-model="firstName" 
+                    type="text" 
+                    class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Name"
+                    required
+                />
+              </div>
+            </div>
+            <div>
+              <label for="last-name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <input 
+                    id="last-name"   
+                    v-model="lastName" 
+                    type="text" 
+                    class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Last Name"
+                    required
+                />
+              </div>
+            </div>
+          </div>
+          
           <div>
             <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <div class="relative">
@@ -188,6 +228,8 @@ const userStore = useUserStore();
 const mode = ref<'signin' | 'signup'>('signin');
 const email = ref('');
 const password = ref('');
+const firstName = ref('');
+const lastName = ref('');
 const errorMsg = ref('');
 const loading = ref(false);
 
@@ -196,18 +238,18 @@ const handleSignIn = async () => {
     loading.value = true;
     errorMsg.value = '';
     
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.value,
-      password: password.value,
-    });
+    // Use the store's signIn method instead of directly calling Supabase
+    const result = await userStore.signIn(email.value, password.value);
 
-    if (error) throw error;
-    
-    // Set user in store
-    if (data.user) {
-      await userStore.setUser(data.user);
-      router.push('/dashboard');
+    if (!result.success) {
+      throw new Error(result.error);
     }
+    
+    // Clear any local storage data that might be from guest mode
+    localStorage.removeItem('transactions');
+    localStorage.removeItem('budgets');
+    
+    router.push('/dashboard');
   } catch (error: any) {
     errorMsg.value = error.message || 'Failed to sign in';
   } finally {
@@ -220,9 +262,21 @@ const handleSignUp = async () => {
     loading.value = true;
     errorMsg.value = '';
     
+    if (!firstName.value || !lastName.value) {
+      errorMsg.value = 'Please enter your first and last name';
+      loading.value = false;
+      return;
+    }
+    
     const { data, error } = await supabase.auth.signUp({
       email: email.value,
       password: password.value,
+      options: {
+        data: {
+          first_name: firstName.value,
+          last_name: lastName.value
+        }
+      }
     });
 
     if (error) throw error;
@@ -234,6 +288,8 @@ const handleSignUp = async () => {
         .insert({
           id: data.user.id,
           email: data.user.email,
+          first_name: firstName.value,
+          last_name: lastName.value,
           currency: '€',
           theme: 'light'
         });

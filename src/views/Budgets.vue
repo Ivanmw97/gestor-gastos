@@ -53,8 +53,8 @@
           </div>
           <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <span class="text-sm font-medium order-2 sm:order-1" 
-                  :class="budget.spent > budget.limit ? 'text-red-600' : 'text-gray-600'">
-              {{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €
+                  :class="budget.spent > budget.budget_limit ? 'text-red-600' : 'text-gray-600'">
+                {{ budget.spent.toFixed(2) }} € / {{ budget.budget_limit.toFixed(2) }} €
             </span>
             <div class="flex gap-2 order-1 sm:order-2">
               <button class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 transition-colors" 
@@ -76,20 +76,20 @@
         <!-- Progress Bar -->
         <div class="w-full bg-gray-100 rounded-full h-3 mb-4">
           <div class="h-3 rounded-full transition-all duration-300"
-               :class="getBudgetColor(budget.spent / budget.limit)"
-               :style="{ width: `${Math.min((budget.spent / budget.limit * 100), 100)}%` }">
+               :class="getBudgetColor(budget.spent / budget.budget_limit)"
+               :style="{ width: `${Math.min((budget.spent / budget.budget_limit * 100), 100)}%` }">
           </div>
         </div>
 
         <!-- Status Display -->
         <div class="flex justify-between text-sm">
-          <span class="font-medium" :class="budget.spent / budget.limit > 0.75 ? 'text-yellow-600' : 'text-gray-600'">
-            {{ ((budget.spent / budget.limit) * 100).toFixed(1) }}% used
+          <span class="font-medium" :class="budget.spent / budget.budget_limit > 0.75 ? 'text-yellow-600' : 'text-gray-600'">
+            {{ ((budget.spent / budget.budget_limit) * 100).toFixed(1) }}% used
           </span>
-          <span :class="budget.limit - budget.spent > 0 ? 'text-green-600' : 'text-red-600'">
-            {{ budget.limit - budget.spent > 0 
-              ? `${(budget.limit - budget.spent).toFixed(2)} € available` 
-              : `${Math.abs(budget.limit - budget.spent).toFixed(2)} € over budget`
+          <span :class="budget.budget_limit - budget.spent > 0 ? 'text-green-600' : 'text-red-600'">
+            {{ budget.budget_limit - budget.spent > 0 
+              ? `${(budget.budget_limit - budget.spent).toFixed(2)} € available` 
+              : `${Math.abs(budget.budget_limit - budget.spent).toFixed(2)} € over budget`
             }}
           </span>
         </div>
@@ -146,7 +146,7 @@
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium mb-2">Monthly Limit (€)</label>
-              <input v-model.number="newBudget.limit" type="number" required min="0.01" step="0.01"
+              <input v-model.number="newBudget.budget_limit" type="number" required min="0.01" step="0.01"
                      class="w-full border rounded-md p-2">
             </div>
             <div class="flex justify-end gap-4">
@@ -174,7 +174,7 @@
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium mb-2">Monthly Limit (€)</label>
-              <input v-model.number="editingBudget.limit" type="number" required min="0.01" step="0.01"
+              <input v-model.number="editingBudget.budget_limit" type="number" required min="0.01" step="0.01"
                      class="w-full border rounded-md p-2">
             </div>
             <div class="flex justify-end gap-4">
@@ -215,7 +215,7 @@ const formattedMonth = computed(() =>
 
 const newBudget = ref<Budget>({
   category: '',
-  limit: 0
+  budget_limit: 0
 });
 
 const budgetsWithSpent = computed<BudgetWithSpent[]>(() => {
@@ -226,8 +226,7 @@ const budgetsWithSpent = computed<BudgetWithSpent[]>(() => {
       .filter(t => 
         t.type === 'expense' && 
         t.category === budget.category &&
-        t.date.startsWith(currentMonth.value) &&
-        t.date <= new Date().toISOString().split('T')[0]
+        t.date.startsWith(currentMonth.value)
       )
       .reduce((sum, t) => sum + t.amount, 0);
 
@@ -240,7 +239,7 @@ const budgetsWithSpent = computed<BudgetWithSpent[]>(() => {
 
 // Update totalBudget to use store's budgets
 const totalBudget = computed(() => 
-  budgets.value.reduce((sum, budget) => sum + budget.limit, 0)
+  budgets.value.reduce((sum, budget) => sum + budget.budget_limit, 0)
 );
 
 const totalSpent = computed(() => 
@@ -254,7 +253,7 @@ const getBudgetColor = (percentage: number) => {
 };
 
 const addBudget = () => {
-  if (!newBudget.value.limit || newBudget.value.limit <= 0) {
+  if (!newBudget.value.budget_limit || newBudget.value.budget_limit <= 0) {
     return;
   }
   
@@ -266,35 +265,35 @@ const addBudget = () => {
 
   budgetStore.addBudget({
     category: newBudget.value.category,
-    limit: newBudget.value.limit
+    budget_limit: newBudget.value.budget_limit
   });
-  newBudget.value = { category: '', limit: 0 };
+  newBudget.value = { category: '', budget_limit: 0 };
   showAddBudgetModal.value = false;
 };
 
 const showEditModal = ref(false);
 const editingBudget = ref<Budget>({
   category: '',
-  limit: 0
+  budget_limit: 0
 });
 const originalCategory = ref('');
 
 const editBudget = (budget: BudgetWithSpent) => {
   editingBudget.value = { 
     category: budget.category,
-    limit: budget.limit
+    budget_limit: budget.budget_limit
   };
   originalCategory.value = budget.category;
   showEditModal.value = true;
 };
 
 const updateBudget = () => {
-  if (!editingBudget.value.limit || editingBudget.value.limit <= 0) {
+  if (!editingBudget.value.budget_limit || editingBudget.value.budget_limit <= 0) {
     return;
   }
   budgetStore.updateBudget(
     editingBudget.value.category,
-    editingBudget.value.limit
+    editingBudget.value.budget_limit
   );
   showEditModal.value = false;
 };

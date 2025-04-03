@@ -1,6 +1,10 @@
 export interface Budget {
+  id?: string;
+  user_id?: string;
   category: string;
-  limit: number;
+  budget_limit: number;
+  month?: string;
+  created_at?: string;
 }
 
 export interface BudgetWithSpent extends Budget {

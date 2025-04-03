@@ -83,12 +83,12 @@
              class="space-y-2">
           <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <span class="font-medium text-sm lg:text-base">{{ budget.category }}</span>
-            <span class="text-xs lg:text-sm">{{ budget.spent.toFixed(2) }} € / {{ budget.limit.toFixed(2) }} €</span>
+            <span class="text-xs lg:text-sm">{{ budget.spent.toFixed(2) }} € / {{ budget.budget_limit.toFixed(2) }} €</span>
           </div>
           <div class="w-full bg-gray-100 rounded-full h-2">
             <div class="h-2 rounded-full transition-all duration-300"
-                 :class="getBudgetColor(budget.spent / budget.limit)"
-                 :style="{ width: `${Math.min((budget.spent / budget.limit * 100), 100)}%` }">
+                 :class="getBudgetColor(budget.spent / budget.budget_limit)"
+                 :style="{ width: `${Math.min((budget.spent / budget.budget_limit * 100), 100)}%` }">
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useTransactionStore } from '../store/transactions';
 import { useBudgetStore } from '../store/budgets';
 import { storeToRefs } from 'pinia';
@@ -151,18 +151,32 @@ const budgetStore = useBudgetStore();
 const { transactions } = storeToRefs(transactionStore);
 const { budgets } = storeToRefs(budgetStore);
 
-const currentMonth = new Date().toISOString().substring(0, 7);
+const currentMonth = ref(new Date().toISOString().substring(0, 7));
 
-// Update computed properties to only use current month data
+// Update computed properties to use currentMonth.value
 const currentMonthTransactions = computed(() => 
-  transactions.value.filter(t => t.date.startsWith(currentMonth))
+  transactions.value.filter(t => t.date.startsWith(currentMonth.value))
 );
 
 const todaySpent = computed(() => {
+  // Get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split('T')[0];
-  return currentMonthTransactions.value
-    .filter(t => t.type === 'expense' && t.date === today)
-    .reduce((sum, t) => sum + t.amount, 0);
+  console.log('Today date for filtering:', today);
+  
+  const todayTransactions = transactions.value.filter(t => {
+    // Extract just the date part from the transaction date
+    const transactionDate = t.date.split('T')[0];
+    console.log(`Comparing transaction date: ${t.date} with today: ${today}, match: ${transactionDate === today}`);
+    return t.type === 'expense' && transactionDate === today;
+  });
+  
+  console.log('Today transactions:', todayTransactions);
+  
+  // Calculate the sum
+  const total = todayTransactions.reduce((sum, t) => sum + t.amount, 0);
+  console.log('Today spent total:', total);
+  
+  return total;
 });
 
 const monthlySpent = computed(() => {
@@ -171,18 +185,37 @@ const monthlySpent = computed(() => {
     .reduce((sum, t) => sum + t.amount, 0);
 });
 
+// Computed property for budgets with spent amounts
 const budgetsWithSpent = computed(() => {
+  if (!budgets.value || !transactions.value) return [];
+  
   return budgets.value.map(budget => {
-    const spent = currentMonthTransactions.value
-      .filter(t => t.type === 'expense' && t.category === budget.category)
+    const spent = transactions.value
+      .filter(t => 
+        t.type === 'expense' && 
+        t.category === budget.category &&
+        t.date.startsWith(currentMonth.value)
+      )
       .reduce((sum, t) => sum + t.amount, 0);
 
     return {
       ...budget,
       spent
     };
-  });
+  }).sort((a, b) => (b.spent / b.budget_limit) - (a.spent / a.budget_limit));
 });
+
+// Total budget calculation
+const totalBudget = computed(() => 
+  budgets.value.reduce((sum, budget) => sum + budget.budget_limit, 0)
+);
+
+// Function to get color class based on budget usage
+const getBudgetColor = (ratio: number) => {
+  if (ratio >= 1) return 'bg-red-500';
+  if (ratio >= 0.75) return 'bg-yellow-500';
+  return 'bg-green-500';
+};
 
 const recentTransactions = computed(() => {
   return [...transactions.value]
@@ -196,23 +229,13 @@ const spentDifference = computed(() => {
   yesterday.setDate(yesterday.getDate() - 1);
   
   const yesterdayStr = yesterday.toISOString().split('T')[0];
-  const yesterdaySpent = currentMonthTransactions.value
-    .filter(t => t.type === 'expense' && t.date.startsWith(yesterdayStr))
+  
+  const yesterdaySpent = transactions.value
+    .filter(t => t.type === 'expense' && t.date === yesterdayStr)
     .reduce((sum, t) => sum + t.amount, 0);
 
   return todaySpent.value - yesterdaySpent;
 });
-
-const totalBudget = computed(() => {
-  return budgets.value.reduce((sum, budget) => sum + budget.limit, 0);
-});
-
-const getBudgetColor = (percentage: number) => {
-  const ratio = Number(percentage);
-  if (ratio >= 1) return 'bg-red-500';
-  if (ratio >= 0.75) return 'bg-yellow-500';
-  return 'bg-blue-500';
-};
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {

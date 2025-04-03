@@ -1,68 +1,165 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 
-export const useUserStore = defineStore('user', () => {
-  const user = ref<User | null>(null);
-  const isLoading = ref(true);
-  const isGuestMode = ref(false);
+interface UserSignUpData {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+}
+
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    user: null as User | null,
+    isLoading: false,
+    isGuestMode: false
+  }),
   
-  // Initialize user on app load
-  const initialize = async () => {
-    isLoading.value = true;
+  actions: {
+    setUser(user: User | null) {
+      this.user = user;
+    },
     
-    try {
-      // Check if we have a stored guest mode preference
-      const storedGuestMode = localStorage.getItem('guestMode');
-      if (storedGuestMode === 'true') {
-        isGuestMode.value = true;
-        isLoading.value = false;
-        return;
-      }
+    async initialize() {
+      this.isLoading = true;
       
-      // Check for existing session
-      const { data } = await supabase.auth.getSession();
-      
-      if (data.session?.user) {
-        user.value = data.session.user;
+      try {
+        // First check if we're in guest mode (from localStorage)
+        const storedGuestMode = localStorage.getItem('guestMode');
+        if (storedGuestMode === 'true') {
+          this.isGuestMode = true;
+          console.log('Initialized in guest mode');
+          return;
+        }
+        
+        // Otherwise try to get the user session
+        const { data, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          console.error('Error getting user:', error.message);
+          return;
+        }
+        
+        if (data?.user) {
+          this.user = data.user;
+          console.log('User authenticated:', this.user.email);
+        } else {
+          console.log('No authenticated user found');
+        }
+      } catch (error) {
+        console.error('Error in initialize:', error);
+      } finally {
+        this.isLoading = false;
       }
-    } catch (error) {
-      console.error('Error initializing user:', error);
-    } finally {
-      isLoading.value = false;
+    },
+    
+    setGuestMode(value: boolean) {
+      this.isGuestMode = value;
+      localStorage.setItem('guestMode', value.toString());
+      console.log('Guest mode set to:', value);
+    },
+    
+    async signIn(email: string, password: string) {
+      this.isLoading = true;
+      
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        
+        if (error) throw error;
+        
+        this.isGuestMode = false;
+        localStorage.removeItem('guestMode');
+        
+        this.setUser(data.user);
+        return { success: true };
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to sign in';
+        console.error('Sign in error:', errorMessage);
+        return { 
+          success: false, 
+          error: errorMessage 
+        };
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    
+    async signUp(userData: UserSignUpData) {
+      this.isLoading = true;
+      
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: userData.email,
+          password: userData.password,
+          options: {
+            data: {
+              first_name: userData.first_name,
+              last_name: userData.last_name
+            }
+          }
+        });
+        
+        if (error) throw error;
+        
+        if (data.user) {
+          // Create a profile for the new user
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              email: data.user.email,
+              first_name: userData.first_name,
+              last_name: userData.last_name,
+              currency: '€',
+              theme: 'light'
+            });
+           
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+            // Continue anyway since the user was created
+          }
+        }
+        
+        return { success: true };
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to sign up';
+        console.error('Sign up error:', errorMessage);
+        return { 
+          success: false, 
+          error: errorMessage
+        };
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    
+    async signOut() {
+      this.isLoading = true;
+      
+      try {
+        const { error } = await supabase.auth.signOut();
+        
+        if (error) throw error;
+        
+        this.user = null;
+        this.isGuestMode = false;
+        localStorage.removeItem('guestMode');
+        
+        return { success: true };
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to sign out';
+        console.error('Sign out error:', errorMessage);
+        return { 
+          success: false, 
+          error: errorMessage
+        };
+      } finally {
+        this.isLoading = false;
+      }
     }
-  };
-  
-  const setUser = async (newUser: User | null) => {
-    user.value = newUser;
-    isGuestMode.value = false;
-    localStorage.removeItem('guestMode');
-  };
-  
-  const setGuestMode = (value: boolean) => {
-    isGuestMode.value = value;
-    user.value = null;
-    localStorage.setItem('guestMode', value.toString());
-  };
-  
-  const signOut = async () => {
-    if (isGuestMode.value) {
-      isGuestMode.value = false;
-      localStorage.removeItem('guestMode');
-    } else {
-      await supabase.auth.signOut();
-      user.value = null;
-    }
-  };
-  
-  return {
-    user,
-    isLoading,
-    isGuestMode,
-    initialize,
-    setUser,
-    setGuestMode,
-    signOut
-  };
+  }
 });

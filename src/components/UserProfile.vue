@@ -35,17 +35,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '../store/user';
 import { useRouter } from 'vue-router';
 import { ChevronDown, LogOut } from 'lucide-vue-next';
+import { supabase } from '../lib/supabaseClient';
 
 const userStore = useUserStore();
 const router = useRouter();
 const isOpen = ref(false);
+const userProfile = ref<any>(null);
+
+// Fetch user profile from database
+onMounted(async () => {
+  if (!userStore.isGuestMode && userStore.user) {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', userStore.user.id)
+        .single();
+        
+      if (error) throw error;
+      userProfile.value = data;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  }
+});
+
+const firstName = computed(() => {
+  if (userStore.isGuestMode) return 'Guest';
+  // First try to get from DB profile
+  if (userProfile.value?.first_name) return userProfile.value.first_name;
+  // Then try metadata
+  return userStore.user?.user_metadata?.first_name || 
+         userStore.user?.email?.split('@')[0].split('.')[0] || 'User';
+});
+
+const lastName = computed(() => {
+  if (userStore.isGuestMode) return 'User';
+  // First try to get from DB profile
+  if (userProfile.value?.last_name) return userProfile.value.last_name;
+  // Then try metadata
+  return userStore.user?.user_metadata?.last_name || 
+         (userStore.user?.email?.split('@')[0].includes('.') ? 
+          userStore.user?.email?.split('@')[0].split('.')[1] : '');
+});
 
 const displayName = computed(() => {
   if (userStore.isGuestMode) return 'Guest User';
+  if (firstName.value && lastName.value) {
+    return `${firstName.value} ${lastName.value}`;
+  }
   return userStore.user?.email?.split('@')[0] || 'User';
 });
 
@@ -60,8 +102,9 @@ const userStatus = computed(() => {
 
 const userInitial = computed(() => {
   if (userStore.isGuestMode) return 'G';
-  const name = userStore.user?.email?.split('@')[0] || 'U';
-  return name.charAt(0).toUpperCase();
+  const firstInitial = firstName.value.charAt(0).toUpperCase();
+  const lastInitial = lastName.value ? lastName.value.charAt(0).toUpperCase() : '';
+  return lastInitial ? `${firstInitial}${lastInitial}` : firstInitial;
 });
 
 const signOut = async () => {

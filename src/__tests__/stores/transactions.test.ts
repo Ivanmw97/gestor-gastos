@@ -3,6 +3,45 @@ import { setActivePinia, createPinia } from 'pinia';
 import { useTransactionStore } from '../../store/transactions';
 import type { TransactionType } from '../../types/Transaction';
 
+// Mock the supabase client
+vi.mock('../../lib/supabaseClient', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          order: () => ({
+            data: [],
+            error: null
+          })
+        })
+      }),
+      insert: () => ({
+        select: () => ({
+          single: () => ({
+            data: { id: 'mock-id' },
+            error: null
+          })
+        })
+      }),
+      update: () => ({
+        eq: () => ({
+          eq: () => ({
+            data: null,
+            error: null
+          })
+        })
+      }),
+      delete: () => ({
+        eq: () => ({
+          eq: () => ({
+            error: null
+          })
+        })
+      })
+    })
+  }
+}));
+
 // Mock the user store
 vi.mock('../../store/user', () => ({
   useUserStore: () => ({
@@ -72,7 +111,6 @@ describe('Transaction Store', () => {
     });
   });
   
-  // Let's simplify this test to focus on just filtering by month
   it('should filter transactions by month', async () => {
     const store = useTransactionStore();
     // Use a fixed date for testing
@@ -100,7 +138,6 @@ describe('Transaction Store', () => {
     expect(monthlyTransactions[0].description).toBe('Test expense');
   });
   
-  // Test adding multiple transactions
   it('should add multiple transactions', async () => {
     const store = useTransactionStore();
     

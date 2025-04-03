@@ -4,7 +4,12 @@ import Transactions from '../views/Transactions.vue';
 import Stats from '../views/Stats.vue';
 import Budgets from '../views/Budgets.vue';
 
-  
+// Check if we have a redirect in the URL (from 404.html)
+const redirect = window.location.search.replace('?', '');
+if (redirect) {
+  window.history.replaceState(null, '', '/gestor-gastos/' + redirect);
+}
+
 const router = createRouter({
   history: createWebHistory('/gestor-gastos/'),
   routes: [
@@ -32,7 +37,7 @@ const router = createRouter({
       name: 'budgets',
       component: Budgets
     },
-    // Add a catch-all route to handle direct URL access
+    // Catch-all route
     {
       path: '/:pathMatch(.*)*',
       redirect: '/dashboard'

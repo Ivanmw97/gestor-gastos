@@ -70,9 +70,21 @@
 
       <div class="bg-white p-4 lg:p-6 rounded-lg shadow-sm">
         <h3 class="text-base lg:text-lg font-semibold mb-4">Daily Spending Trend</h3>
-        <div class="h-48 lg:h-64">
-          <!-- Add a chart library of your choice here -->
-          <p class="text-sm text-gray-500 text-center mt-16 lg:mt-20">Chart coming soon...</p>
+        <div class="h-48 lg:h-64 flex flex-col items-center justify-center">
+          <!-- Chart placeholder -->
+          <div class="w-full flex items-end justify-between space-x-1 px-4 mb-4">
+            <div v-for="i in 12" :key="i" 
+                 class="bg-blue-400 opacity-60 rounded-t-md transition-all duration-300 hover:opacity-100"
+                 :class="i % 3 === 0 ? 'bg-blue-600' : ''"
+                 :style="`height: ${20 + Math.random() * 60}px; width: ${100/14}%`">
+            </div>
+          </div>
+          <div class="flex items-center mt-4 text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <p class="text-sm">Interactive chart coming soon</p>
+          </div>
         </div>
       </div>
     </div>

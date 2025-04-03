@@ -32,7 +32,7 @@
       <div class="flex items-center gap-2 px-2 mb-4">
         <p class="text-gray-400 text-xs font-medium">MENU</p>
       </div>
-      <SidebarItem :icon="LayoutDashboard" label="Dashboard" to="/" />
+      <SidebarItem :icon="LayoutDashboard" label="Dashboard" to="/dashboard" />
       <SidebarItem :icon="ReceiptEuro" label="Transactions" to="/transactions" />
       <SidebarItem :icon="Wallet" label="Budgets" to="/budgets" />
       <SidebarItem :icon="BarChart" label="Stats" to="/stats" />

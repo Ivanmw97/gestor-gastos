@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Financial Manager</title>
+  <script>
+    (function() {
+      var segmentCount = 1;
+      var l = window.location;
+      var repo = '/gestor-gastos/';
+      
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        repo +
+        l.pathname.split('/').slice(segmentCount + 1).join('/') +
+        (l.search ? l.search : '') +
+        (l.hash ? l.hash : '')
+      );
+    })();
+  </script>
+</head>
+<body>
+  Redirecting...
+</body>
+</html>

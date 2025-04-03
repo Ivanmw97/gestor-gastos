@@ -14,19 +14,28 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
+      name: 'dashboard',
       component: Dashboard
     },
     {
       path: '/transactions',
+      name: 'transactions',
       component: Transactions
     },
     {
       path: '/stats',
+      name: 'stats',
       component: Stats
     },
     {
       path: '/budgets',
+      name: 'budgets',
       component: Budgets
+    },
+    // Add a catch-all route to handle direct URL access
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/dashboard'
     }
   ]
 });

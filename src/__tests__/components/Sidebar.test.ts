@@ -1,11 +1,18 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import Sidebar from '../../components/Sidebar.vue'
 import SidebarItem from '../../components/SidebarItem.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import * as LucideIcons from 'lucide-vue-next'
+import { createPinia, setActivePinia } from 'pinia'
+import { createTestingPinia } from '@pinia/testing'
 
 describe('Sidebar', () => {
+  beforeEach(() => {
+    // Create a fresh Pinia instance for each test
+    setActivePinia(createPinia())
+  })
+
   const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -19,7 +26,10 @@ describe('Sidebar', () => {
   it('renders properly', () => {
     const wrapper = mount(Sidebar, {
       global: {
-        plugins: [router],
+        plugins: [
+          router,
+          createTestingPinia() // Use testing pinia
+        ],
         components: {
           ...LucideIcons
         }
@@ -35,7 +45,10 @@ describe('Sidebar', () => {
   it('displays correct version', () => {
     const wrapper = mount(Sidebar, {
       global: {
-        plugins: [router],
+        plugins: [
+          router,
+          createTestingPinia() // Use testing pinia
+        ],
         components: {
           ...LucideIcons
         }
@@ -48,7 +61,10 @@ describe('Sidebar', () => {
   it('contains all navigation items', () => {
     const wrapper = mount(Sidebar, {
       global: {
-        plugins: [router],
+        plugins: [
+          router,
+          createTestingPinia() // Use testing pinia
+        ],
         components: {
           ...LucideIcons
         }

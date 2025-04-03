@@ -65,7 +65,7 @@ describe('Sidebar', () => {
       }
     })
     const versionText = wrapper.find('.version')
-    expect(versionText.text()).toBe('v1.1.0')
+    expect(versionText.text()).toBe('v1.2.0')
   })
 
   it('contains all navigation items', () => {

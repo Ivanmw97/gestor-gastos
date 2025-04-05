@@ -14,11 +14,11 @@
       // Get the path without the base path
       var path = l.pathname.split('/').slice(pathSegmentsToKeep + 1).join('/');
       
-      // Redirect to the index.html with the path as a hash
+      // Redirect to the index.html with the path as a query parameter
       l.replace(
         l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
         '/gestor-gastos/' + 
-        (path ? '?' + path : '')
+        (path ? '?p=' + path : '')
       );
     })();
   </script>

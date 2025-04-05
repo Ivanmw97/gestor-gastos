@@ -245,9 +245,9 @@ const handleSignIn = async () => {
       throw new Error(result.error);
     }
     
-    // Clear any local storage data that might be from guest mode
-    localStorage.removeItem('transactions');
-    localStorage.removeItem('budgets');
+    // Clear any guest mode data
+    localStorage.removeItem('guest_transactions');
+    localStorage.removeItem('guest_budgets');
     
     router.push('/dashboard');
   } catch (error: any) {
@@ -313,6 +313,12 @@ const handleSignUp = async () => {
 };
 
 const handleGuestAccess = () => {
+  // Clear any existing data first
+  localStorage.removeItem('transactions');
+  localStorage.removeItem('budgets');
+  localStorage.removeItem('guest_transactions');
+  localStorage.removeItem('guest_budgets');
+  
   userStore.setGuestMode(true);
   router.push('/dashboard');
 };

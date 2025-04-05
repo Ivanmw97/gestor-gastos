@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div ref="profileContainer" class="relative">
     <button 
       class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 transition-colors w-full"
       @click="isOpen = !isOpen"
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useUserStore } from '../store/user';
 import { useRouter } from 'vue-router';
 import { ChevronDown, LogOut } from 'lucide-vue-next';
@@ -45,23 +45,40 @@ const userStore = useUserStore();
 const router = useRouter();
 const isOpen = ref(false);
 const userProfile = ref<any>(null);
+const profileContainer = ref<HTMLElement | null>(null);
 
-// Fetch user profile from database
-onMounted(async () => {
+// Handle click outside
+const handleClickOutside = (event: MouseEvent) => {
+  if (profileContainer.value && !profileContainer.value.contains(event.target as Node)) {
+    isOpen.value = false;
+  }
+};
+
+// Add event listener when component is mounted
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+  
+  // Fetch user profile from database
   if (!userStore.isGuestMode && userStore.user) {
     try {
-      const { data, error } = await supabase
+      supabase
         .from('profiles')
         .select('first_name, last_name')
         .eq('id', userStore.user.id)
-        .single();
-        
-      if (error) throw error;
-      userProfile.value = data;
+        .single()
+        .then(({ data, error }) => {
+          if (error) throw error;
+          userProfile.value = data;
+        });
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
   }
+});
+
+// Remove event listener when component is unmounted
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 
 const firstName = computed(() => {
@@ -108,12 +125,15 @@ const userInitial = computed(() => {
 });
 
 const signOut = async () => {
+  isOpen.value = false; // Close dropdown first to avoid UI glitches
+  
   if (userStore.isGuestMode) {
     userStore.setGuestMode(false);
   } else {
     await userStore.signOut();
   }
-  isOpen.value = false;
+  
+  // Navigate to auth page after signout is complete
   router.push('/auth');
 };
 </script>

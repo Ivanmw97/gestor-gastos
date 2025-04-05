@@ -35,7 +35,7 @@ export const useTransactionStore = defineStore('transactions', {
       // If in guest mode, load from localStorage
       if (userStore.isGuestMode) {
         try {
-          const stored = localStorage.getItem('transactions');
+          const stored = localStorage.getItem('guest_transactions');
           if (stored) {
             this.transactions = JSON.parse(stored);
           }
@@ -183,7 +183,11 @@ export const useTransactionStore = defineStore('transactions', {
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('transactions', JSON.stringify(this.transactions));
+        // Only save to localStorage if in guest mode
+        const userStore = useUserStore();
+        if (userStore.isGuestMode) {
+          localStorage.setItem('guest_transactions', JSON.stringify(this.transactions));
+        }
       } catch (error) {
         console.error('Error saving transactions to localStorage:', error);
       }

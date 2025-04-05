@@ -20,7 +20,7 @@ export const useBudgetStore = defineStore('budgets', {
       // If in guest mode, load from localStorage
       if (userStore.isGuestMode) {
         try {
-          const stored = localStorage.getItem('budgets');
+          const stored = localStorage.getItem('guest_budgets');
           if (stored) {
             this.budgets = JSON.parse(stored);
           }
@@ -200,7 +200,11 @@ export const useBudgetStore = defineStore('budgets', {
 
     saveToLocalStorage() {
       try {
-        localStorage.setItem('budgets', JSON.stringify(this.budgets));
+        // Only save to localStorage if in guest mode
+        const userStore = useUserStore();
+        if (userStore.isGuestMode) {
+          localStorage.setItem('guest_budgets', JSON.stringify(this.budgets));
+        }
       } catch (error) {
         console.error('Error saving budgets to localStorage:', error);
       }

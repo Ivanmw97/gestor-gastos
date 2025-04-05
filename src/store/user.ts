@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
+import { getActivePinia } from 'pinia';
 
 interface UserSignUpData {
   email: string;
@@ -54,7 +55,27 @@ export const useUserStore = defineStore('user', {
       }
     },
     
-    setGuestMode(value: boolean) {
+    async setGuestMode(value: boolean) {
+      // If switching to guest mode, reset all other stores first
+      if (value) {
+        const pinia = getActivePinia();
+        if (pinia) {
+          // Get store IDs from state
+          const storeIds = Object.keys(pinia.state.value);
+          
+          // Import stores dynamically to reset them
+          if (storeIds.includes('transactions')) {
+            const { useTransactionStore } = await import('./transactions');
+            useTransactionStore().$reset();
+          }
+          
+          if (storeIds.includes('budgets')) {
+            const { useBudgetStore } = await import('./budgets');
+            useBudgetStore().$reset();
+          }
+        }
+      }
+      
       this.isGuestMode = value;
       localStorage.setItem('guestMode', value.toString());
       console.log('Guest mode set to:', value);
@@ -147,7 +168,30 @@ export const useUserStore = defineStore('user', {
         
         this.user = null;
         this.isGuestMode = false;
+        
+        // Clear all localStorage data
         localStorage.removeItem('guestMode');
+        localStorage.removeItem('transactions');
+        localStorage.removeItem('budgets');
+        localStorage.removeItem('guest_transactions');
+        localStorage.removeItem('guest_budgets');
+        
+        const pinia = getActivePinia();
+        if (pinia) {
+          // Get store IDs from state
+          const storeIds = Object.keys(pinia.state.value);
+          
+          // Import stores dynamically to reset them
+          if (storeIds.includes('transactions')) {
+            const { useTransactionStore } = await import('./transactions');
+            useTransactionStore().$reset();
+          }
+          
+          if (storeIds.includes('budgets')) {
+            const { useBudgetStore } = await import('./budgets');
+            useBudgetStore().$reset();
+          }
+        }
         
         return { success: true };
       } catch (error: unknown) {

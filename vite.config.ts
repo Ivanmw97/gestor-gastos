@@ -13,6 +13,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    assetsInlineLimit: 4096
+    assetsInlineLimit: 4096,
+    sourcemap: true,
+    // Ensure proper chunk naming
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
   }
 })

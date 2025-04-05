@@ -13,7 +13,7 @@ if (redirect) {
 }
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL || '/gestor-gastos/'),
   routes: [
     {
       path: '/',
@@ -79,6 +79,17 @@ router.beforeEach(async (to, _, next) => {
   else {
     next();
   }
+});
+
+// Add this to handle initial navigation
+router.beforeEach((to, _, next) => {
+  // Handle GitHub Pages 404 redirect
+  if (to.fullPath.includes('/?p=')) {
+    const path = to.fullPath.split('/?p=')[1];
+    next({ path, replace: true });
+    return;
+  }
+  next();
 });
 
 export default router;

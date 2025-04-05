@@ -8,17 +8,21 @@
     // MIT License
     // https://github.com/rafgraph/spa-github-pages
     (function() {
-      var pathSegmentsToKeep = 1; // Keep the "gestor-gastos" segment
+      var segmentCount = 1; // Change this to 0 if using a custom domain
       var l = window.location;
       
-      // Get the path without the base path
-      var path = l.pathname.split('/').slice(pathSegmentsToKeep + 1).join('/');
+      // Extract the path without the base path
+      var pathSegments = l.pathname.split('/');
+      var repoName = pathSegments[1]; // Should be 'gestor-gastos'
+      var path = pathSegments.slice(segmentCount + 1).join('/');
       
       // Redirect to the index.html with the path as a query parameter
       l.replace(
         l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        '/gestor-gastos/' + 
-        (path ? '?p=' + path : '')
+        '/' + repoName + '/' + 
+        (path ? '?' + path.split('?')[0].split('#')[0] : '') +
+        (l.search ? '&' + l.search.slice(1) : '') +
+        l.hash
       );
     })();
   </script>

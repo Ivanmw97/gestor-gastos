@@ -12,16 +12,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Handle GitHub Pages SPA routing -->
     <script>
-      // Check if we need to redirect to a specific route
+      // Redirect script for GitHub Pages
       (function() {
-        var redirect = location.search.match(/p=(.+)/);
-        if (redirect && redirect[1]) {
-          history.replaceState(null, null, '/' + redirect[1]);
+        var redirect = location.search.substr(1);
+        if (redirect) {
+          history.replaceState(null, null, redirect);
         }
       })();
     </script>
-    <script type="module" crossorigin src="/gestor-gastos/assets/index-xC10ix9C.js"></script>
-    <link rel="stylesheet" crossorigin href="/gestor-gastos/assets/index-KBbseaM4.css">
+    <script type="module" crossorigin src="/gestor-gastos/assets/index.js"></script>
+    <link rel="stylesheet" crossorigin href="/gestor-gastos/assets/index.css">
   </head>
   <body class="bg-gray-100">
     <div id="app"></div>

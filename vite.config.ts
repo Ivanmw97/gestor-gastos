@@ -10,19 +10,16 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  define: {
-    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL),
-    'import.meta.env.VITE_SUPABASE_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY),
-  },
   build: {
     outDir: 'dist',
+    // Ensure assets are properly referenced with the correct base path
     assetsDir: 'assets',
-    assetsInlineLimit: 4096,
-    sourcemap: true,
-    // Ensure proper chunk naming
+    // Disable asset filename hashing for more predictable URLs
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
       }
     }
   }

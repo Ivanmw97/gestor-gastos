@@ -301,7 +301,6 @@ const saveTransaction = () => {
     });
   } else {
     transactionStore.addTransaction({
-      id: crypto.randomUUID(),
       type: currentTransaction.value.type as TransactionType,
       description: currentTransaction.value.description,
       category: currentTransaction.value.category,
@@ -309,6 +308,7 @@ const saveTransaction = () => {
       date: currentTransaction.value.date
     });
   }
+  
   closeModal();
 };
 

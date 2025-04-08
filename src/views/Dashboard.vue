@@ -161,22 +161,33 @@ const currentMonthTransactions = computed(() =>
 const todaySpent = computed(() => {
   // Get today's date in YYYY-MM-DD format
   const today = new Date().toISOString().split('T')[0];
-  console.log('Today date for filtering:', today);
   
   const todayTransactions = transactions.value.filter(t => {
     // Extract just the date part from the transaction date
     const transactionDate = t.date.split('T')[0];
-    console.log(`Comparing transaction date: ${t.date} with today: ${today}, match: ${transactionDate === today}`);
     return t.type === 'expense' && transactionDate === today;
   });
   
-  console.log('Today transactions:', todayTransactions);
-  
   // Calculate the sum
-  const total = todayTransactions.reduce((sum, t) => sum + t.amount, 0);
-  console.log('Today spent total:', total);
+  return todayTransactions.reduce((sum, t) => sum + t.amount, 0);
+});
+
+const spentDifference = computed(() => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
   
-  return total;
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  // Get all expense transactions for yesterday
+  const yesterdayTransactions = transactions.value.filter(t => {
+    const transactionDate = t.date.split('T')[0];
+    return t.type === 'expense' && transactionDate === yesterdayStr;
+  });
+  
+  const yesterdaySpent = yesterdayTransactions.reduce((sum, t) => sum + t.amount, 0);
+
+  return todaySpent.value - yesterdaySpent;
 });
 
 const monthlySpent = computed(() => {
@@ -221,20 +232,6 @@ const recentTransactions = computed(() => {
   return [...transactions.value]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5);
-});
-
-const spentDifference = computed(() => {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-  
-  const yesterdaySpent = transactions.value
-    .filter(t => t.type === 'expense' && t.date === yesterdayStr)
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  return todaySpent.value - yesterdaySpent;
 });
 
 const formatDate = (date: Date) => {

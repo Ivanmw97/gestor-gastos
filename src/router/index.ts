@@ -5,11 +5,14 @@ import Stats from '../views/Stats.vue';
 import Budgets from '../views/Budgets.vue';
 import Auth from '../views/Auth.vue';
 import { useUserStore } from '../store/user';
+import AuthCallback from '../views/AuthCallback.vue';
 
-// Check if we have a redirect in the URL (from 404.html)
-const redirect = window.location.search.replace('?', '');
-if (redirect) {
-  window.history.replaceState(null, '', '/gestor-gastos/' + redirect);
+// GitHub Pages redirect support using spa-github-pages (preserve query + hash)
+const rawRedirect = window.location.search;
+if (rawRedirect.startsWith('?/')) {
+  const redirectPath = rawRedirect.slice(2); // remove "?/"
+  const newUrl = `${import.meta.env.BASE_URL}${redirectPath}`;
+  window.history.replaceState(null, '', newUrl);
 }
 
 const router = createRouter({
@@ -53,6 +56,15 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       redirect: '/dashboard'
+    },
+    // Auth callback route
+    {
+      path: '/auth/callback',
+      name: 'AuthCallback',
+      component: AuthCallback,
+      meta: {
+        requiresAuth: false
+      }
     }
   ]
 });
@@ -79,17 +91,6 @@ router.beforeEach(async (to, _, next) => {
   else {
     next();
   }
-});
-
-// Add this to handle initial navigation
-router.beforeEach((to, _, next) => {
-  // Handle GitHub Pages 404 redirect
-  if (to.fullPath.includes('/?p=')) {
-    const path = to.fullPath.split('/?p=')[1];
-    next({ path, replace: true });
-    return;
-  }
-  next();
 });
 
 export default router;

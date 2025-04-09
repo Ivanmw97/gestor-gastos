@@ -1,219 +1,130 @@
 <template>
-  <div class="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-    <div class="max-w-md w-full bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 transform hover:shadow-xl">
-      <!-- Header -->
-      <div class="p-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-center">
-        <div class="flex justify-center items-center gap-3 mb-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-            <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
-          </svg>
-          <h1 class="text-3xl font-bold">Financial Manager</h1>
-        </div>
-        <p class="text-sm text-blue-100">Sign in to access your financial data from any device</p>
+  <div class="w-screen h-screen flex overflow-hidden">
+    <!-- Left side: Auth Form -->
+    <div class="w-full lg:w-1/2 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-900">
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+      
+        <h2 class="text-center text-3xl font-extrabold text-white">
+          {{ mode === 'signin' ? 'Welcome back!' : 'Join us today' }}
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-400">
+          {{ mode === 'signin' ? 'Don\'t have an account? ' : 'Already have an account? ' }}
+          <a href="#" 
+             class="font-medium text-blue-500 hover:text-blue-400 transition-colors duration-200"
+             @click.prevent="mode = mode === 'signin' ? 'signup' : 'signin'">
+            {{ mode === 'signin' ? 'Create one now' : 'Sign in here' }}
+          </a>
+        </p>
       </div>
 
-      <!-- Auth Form -->
-      <div class="p-8">
-        <div class="mb-8">
-          <div class="flex border-b border-gray-200">
-            <button 
-              class="flex-1 py-3 text-center font-medium transition-all duration-200"
-              :class="mode === 'signin' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'"
-              @click="mode = 'signin'" 
-            >
-              Sign In
-            </button>
-            <button 
-              class="flex-1 py-3 text-center font-medium transition-all duration-200"
-              :class="mode === 'signup' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-500 hover:text-gray-700'"
-              @click="mode = 'signup'" 
-            >
-              Sign Up
-            </button>
-          </div>
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="errorMsg" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-md text-sm">
-          <div class="flex">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
+      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow-xl rounded-lg sm:px-10">
+          <!-- Error message -->
+          <div v-if="errorMsg" class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm">
             {{ errorMsg }}
           </div>
-        </div>
-
-        <!-- Sign In Form -->
-        <form v-if="mode === 'signin'" class="space-y-5" @submit.prevent="handleSignIn">
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-              </div>
-              <input 
-                  id="email" 
-                  v-model="email" 
-                  type="email" 
-                  class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="your@email.com"
-                  required
-              />
-            </div>
-          </div>
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <input 
-                  id="password" 
-                  v-model="password" 
-                  type="password" 
-                  class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="••••••••"
-                  required
-              />
-            </div>
-          </div>
-          <button 
-            type="submit" 
-            class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 font-medium"
-            :disabled="loading"
-          >
-            <span v-if="loading" class="flex items-center justify-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Signing in...
-            </span>
-            <span v-else>Sign In</span>
-          </button>
-        </form>
-
-        <!-- Sign Up Form -->
-        <form v-if="mode === 'signup'" class="space-y-5" @submit.prevent="handleSignUp">
-          <!-- First Name and Last Name fields -->
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="first-name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-                <input 
-                    id="first-name"   
-                    v-model="firstName" 
-                    type="text" 
-                    class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Name"
-                    required
-                />
-              </div>
-            </div>
-            <div>
-              <label for="last-name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-                <input 
-                    id="last-name"   
-                    v-model="lastName" 
-                    type="text" 
-                    class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Last Name"
-                    required
-                />
-              </div>
-            </div>
-          </div>
           
-          <div>
-            <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-              </div>
-              <input 
-                  id="signup-email"   
-                  v-model="email" 
-                  type="email" 
-                  class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="your@email.com"
-                  required
-              />
-            </div>
-          </div>
-          <div>
-            <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <input 
-                  id="signup-password" 
-                  v-model="password" 
-                  type="password" 
-                  class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="••••••••"
-                  required
-              />
-            </div>
-          </div>
-          <button 
-            type="submit" 
-            class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 font-medium"
-            :disabled="loading"
-          >
-            <span v-if="loading" class="flex items-center justify-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <!-- Sign In Form -->
+          <SignInForm 
+            v-if="mode === 'signin'" 
+            :loading="loading"
+            @sign-in="handleSignIn"
+            @forgot-password="showForgotPasswordModal = true"
+            @social-sign-in="handleSocialSignIn"
+            @guest-access="handleGuestAccess"
+          />
+          
+          <!-- Sign Up Form -->
+          <SignUpForm 
+            v-else 
+            :loading="loading"
+            @sign-up="handleSignUp"
+            @show-terms="showTermsModal = true"
+            @show-privacy="showPrivacyModal = true"
+          />
+        
+          <!-- Guest Info -->
+            <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              Creating account...
-            </span>
-            <span v-else>Sign Up</span>
-          </button>
-        </form>
-
-        <!-- Guest Access -->
-        <div class="mt-8 pt-6 border-t border-gray-200">
-          <button 
-            class="w-full bg-gray-100 text-gray-800 py-3 px-4 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 font-medium"
-            @click="handleGuestAccess" 
-          >
-            Continue as Guest
-          </button>
-          <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <p class="ml-2 text-xs text-amber-800">
-              <span class="font-medium">Local storage only:</span> Your data will be saved on this device only and cannot be accessed from other devices.
-            </p>
-          </div>
+              <p class="ml-2 text-xs text-amber-800">
+                <span class="font-medium">Local storage only:</span> Your data will be saved on this device only and cannot be accessed from other devices.
+              </p>
+            </div>        
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- Right side: App Info -->
+    <div class="hidden lg:flex lg:w-1/2 h-full bg-blue-600 relative overflow-hidden">
+      <div class="flex flex-col justify-center items-start w-full h-full p-12 z-10 relative">
+        <!-- App Logo and Name -->
+        <div class="flex items-center gap-3 mb-12">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+            <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
+          </svg>
+          <div>
+            <span class="text-white font-bold text-xl">Financial</span>
+            <span class="text-blue-100 font-medium text-xl">Manager</span>
+          </div>
+        </div>
+
+        <h1 class="text-4xl font-bold text-white mb-6">Manage Your Finances with Ease</h1>
+        <div class="space-y-6 text-blue-100">
+          <div class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-white">Track Expenses</h3>
+              <p class="text-sm">Monitor your daily spending and stay on top of your finances</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-white">Budget Management</h3>
+              <p class="text-sm">Set and manage budgets to reach your financial goals</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <div>
+              <h3 class="font-semibold text-white">Visual Analytics</h3>
+              <p class="text-sm">Get insights with detailed charts and statistics</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Decorative background -->
+      <div class="absolute inset-0 overflow-hidden rounded-none">
+        <!-- Gradient layer -->
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 opacity-70 z-0"></div>
+
+        <!-- Pattern overlay -->
+        <div 
+          class="absolute inset-0 bg-repeat z-10 opacity-10"
+          style="background-image: url('data:image/svg+xml,%3Csvg width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle fill=%22white%22 fill-opacity=%220.2%22 cx=%2250%22 cy=%2250%22 r=%224%22/%3E%3C/svg%3E');"
+        ></div>
+      </div>
+    </div>
+</div>
+
+  <!-- Modals -->
+  <TermsModal v-if="showTermsModal" @close="showTermsModal = false" />
+  <PrivacyModal v-if="showPrivacyModal" @close="showPrivacyModal = false" />
+  <ForgotPasswordModal 
+    v-if="showForgotPasswordModal" 
+    @close="showForgotPasswordModal = false"
+    @success="handlePasswordResetSuccess"
+  />
 </template>
 
 <script setup lang="ts">
@@ -221,25 +132,28 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '../lib/supabaseClient';
 import { useUserStore } from '../store/user';
+import SignInForm from '../components/auth/SignInForm.vue';
+import SignUpForm from '../components/auth/SignUpForm.vue';
+import TermsModal from '../components/auth/TermsModal.vue';
+import PrivacyModal from '../components/auth/PrivacyModal.vue';
+import ForgotPasswordModal from '../components/auth/ForgotPasswordModal.vue';
 
 const router = useRouter();
 const userStore = useUserStore();
 
 const mode = ref<'signin' | 'signup'>('signin');
-const email = ref('');
-const password = ref('');
-const firstName = ref('');
-const lastName = ref('');
 const errorMsg = ref('');
 const loading = ref(false);
+const showTermsModal = ref(false);
+const showPrivacyModal = ref(false);
+const showForgotPasswordModal = ref(false);
 
-const handleSignIn = async () => {
+const handleSignIn = async (email: string, password: string) => {
   try {
     loading.value = true;
     errorMsg.value = '';
     
-    // Use the store's signIn method instead of directly calling Supabase
-    const result = await userStore.signIn(email.value, password.value);
+    const result = await userStore.signIn(email, password);
 
     if (!result.success) {
       throw new Error(result.error);
@@ -257,24 +171,23 @@ const handleSignIn = async () => {
   }
 };
 
-const handleSignUp = async () => {
+const handleSignUp = async (formData: {
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
+}) => {
   try {
     loading.value = true;
     errorMsg.value = '';
     
-    if (!firstName.value || !lastName.value) {
-      errorMsg.value = 'Please enter your first and last name';
-      loading.value = false;
-      return;
-    }
-    
     const { data, error } = await supabase.auth.signUp({
-      email: email.value,
-      password: password.value,
+      email: formData.email,
+      password: formData.password,
       options: {
         data: {
-          first_name: firstName.value,
-          last_name: lastName.value
+          first_name: formData.firstName,
+          last_name: formData.lastName
         }
       }
     });
@@ -288,8 +201,8 @@ const handleSignUp = async () => {
         .insert({
           id: data.user.id,
           email: data.user.email,
-          first_name: firstName.value,
-          last_name: lastName.value,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
           currency: '€',
           theme: 'light'
         });
@@ -321,5 +234,29 @@ const handleGuestAccess = () => {
   
   userStore.setGuestMode(true);
   router.push('/dashboard');
+};
+
+const handleSocialSignIn = async (provider: 'google') => {
+  try {
+    loading.value = true;
+    errorMsg.value = '';
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: 'https://dmrtbyrtvemnohwhlvnr.supabase.co/auth/v1/callback'
+      }
+    });
+    
+    if (error) throw error;
+    
+  } catch (error: any) {
+    errorMsg.value = error.message || `Failed to sign in with ${provider}`;
+    loading.value = false;
+  }
+};
+
+const handlePasswordResetSuccess = () => {
+  errorMsg.value = '';
 };
 </script>

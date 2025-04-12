@@ -71,7 +71,7 @@
         <input 
             id="signup-password" 
             v-model="password" 
-            type="password" 
+            :type="showPassword ? 'text' : 'password'"
             class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="••••••••"
             required
@@ -148,7 +148,7 @@
         <input 
             id="confirm-password" 
             v-model="confirmPassword" 
-            type="password" 
+            :type="showConfirmPassword ? 'text' : 'password'" 
             class="w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             placeholder="••••••••"
             required

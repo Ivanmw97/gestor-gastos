@@ -153,7 +153,7 @@ const { loading } = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'sign-in', email: string, password: string): void
+  (e: 'sign-in', email: string, password: string, rememberMe: boolean): void
   (e: 'forgot-password'): void
   (e: 'social-sign-in', provider: 'google'): void
   (e: 'guest-access'): void
@@ -165,6 +165,6 @@ const showPassword = ref(false);
 const rememberMe = ref(false);
 
 const handleSignIn = () => {
-  emit('sign-in', email.value, password.value);
+  emit('sign-in', email.value, password.value, rememberMe.value);
 };
 </script>

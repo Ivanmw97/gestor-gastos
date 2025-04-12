@@ -81,23 +81,29 @@ export const useUserStore = defineStore('user', {
       console.log('Guest mode set to:', value);
     },
     
-    async signIn(email: string, password: string) {
+    async signIn(email: string, password: string, sessionOptions = {}) {
       this.isLoading = true;
       
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
-          password
+          password,
+          options: sessionOptions
         });
         
         if (error) throw error;
-        
-        this.isGuestMode = false;
-        localStorage.removeItem('guestMode');
-        
-        this.setUser(data.user);
-        return { success: true };
-      } catch (error: unknown) {
+
+        if (data.user) {
+          this.user = data.user;
+          this.isGuestMode = false;
+          localStorage.removeItem('guestMode');
+          this.setUser(data.user);
+          return { success: true };
+        } else {
+          return { success: false, error: 'No user data returned' };
+        }
+      } 
+      catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to sign in';
         console.error('Sign in error:', errorMessage);
         return { 

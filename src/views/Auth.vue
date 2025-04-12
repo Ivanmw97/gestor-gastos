@@ -138,12 +138,17 @@ const showTermsModal = ref(false);
 const showPrivacyModal = ref(false);
 const showForgotPasswordModal = ref(false);
 
-const handleSignIn = async (email: string, password: string) => {
+const handleSignIn = async (email: string, password: string, rememberMe: boolean) => {
   try {
     loading.value = true;
     errorMsg.value = '';
     
-    const result = await userStore.signIn(email, password);
+    // Set session expiration based on rememberMe
+    const sessionOptions = rememberMe 
+      ? { expiresIn: 30 * 24 * 60 * 60 } // 30 days if rememberMe is true
+      : { expiresIn: 1 * 24 * 60 * 60 }  // 1 day if rememberMe is false
+    
+    const result = await userStore.signIn(email, password, sessionOptions);
 
     if (!result.success) {
       throw new Error(result.error);

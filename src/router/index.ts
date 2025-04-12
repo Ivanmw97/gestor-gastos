@@ -29,6 +29,21 @@ const router = createRouter({
       meta: { requiresGuest: true }
     },
     {
+      path: '/reset-password',
+      name: 'ResetPassword',
+      component: Auth,
+      meta: {
+        requiresAuth: false,
+        title: 'Reset Password'
+      },
+      children: [
+        {
+          path: '',
+          component: () => import('../views/ResetPassword.vue')
+        }
+      ]
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: Dashboard,
@@ -80,12 +95,17 @@ router.beforeEach(async (to, _, next) => {
   
   const isAuthenticated = userStore.user !== null || userStore.isGuestMode;
   
+  // Special case for password reset - allow access even when authenticated
+  if (to.path.includes('/reset-password') && to.hash.includes('type=recovery')) {
+    return next();
+  }
+  
   // Routes that require authentication
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/auth');
   } 
   // Routes that require guest (non-authenticated)
-  else if (to.meta.requiresGuest && isAuthenticated) {
+  else if (to.meta.requiresGuest && isAuthenticated && !to.path.includes('/reset-password')) {
     next('/dashboard');
   } 
   else {

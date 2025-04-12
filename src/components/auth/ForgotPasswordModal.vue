@@ -92,8 +92,12 @@ const handleResetPassword = async () => {
     error.value = '';
     success.value = '';
     
+    // Use the BASE_URL from the environment to construct the correct redirect URL
+    const baseUrl = import.meta.env.BASE_URL || '/gestor-gastos/';
+    const redirectTo = `${window.location.origin}${baseUrl}reset-password`;
+    
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.value, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: redirectTo,
     });
     
     if (resetError) throw resetError;

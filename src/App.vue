@@ -48,7 +48,10 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const isAuthRoute = computed(() => route.path === '/auth');
+const isAuthRoute = computed(() => 
+  route.path.includes('/auth') || 
+  route.path.includes('/reset-password')
+);
 
 const showModal = ref(false);
 

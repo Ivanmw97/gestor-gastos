@@ -2,12 +2,12 @@ name: Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ release ]
   workflow_run:
     workflows: ["CI/CD Pipeline"]
     types:
       - completed
-    branches: [ main ]
+    branches: [ release ]
 
 # Add permissions block
 permissions:

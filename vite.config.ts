@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/gestor-gastos/',
+  base: '/financial-manager/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
